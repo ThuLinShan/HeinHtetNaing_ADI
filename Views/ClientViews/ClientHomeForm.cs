@@ -21,5 +21,10 @@
             _welcomeForm.Close();
         }
 
+        private void postProjectButton_Click(object sender, EventArgs e)
+        {
+            Form postProjectForm = new ClientPostProjectForm();
+            postProjectForm.ShowDialog();
+        }
     }
 }

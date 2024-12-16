@@ -169,6 +169,8 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1184, 661);
             Controls.Add(clientSignupPanel);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
             Name = "ClientSigninForm";
             Text = "ClientSigninForm";
             FormClosed += ClientSigninForm_FormClosed;
