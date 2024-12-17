@@ -19,9 +19,9 @@ namespace HeinHtetNaing_ADI.Services
             {
                 using var connection = _databaseService.GetConnection();
                 var query = "INSERT INTO project (project_id, client_id, freelancer_id, title, description, budget, currency, rating, dead_line, " +
-                            "status, start_date, end_date, completed, client_rating, client_review, created_at, updated_at, version) " +
+                            "status, start_date, end_date, completed, client_rating, client_review, created_at, updated_at, version, skill_tags) " +
                             "VALUES (@ProjectId, @ClientId, @FreelancerId, @Title, @Description, @Budget, @Currency, @Rating, @Deadline, " +
-                            "@Status, @StartDate, @EndDate, @Completed, @ClientRating, @ClientReview, @CreatedAt, @UpdatedAt, @Version)";
+                            "@Status, @StartDate, @EndDate, @Completed, @ClientRating, @ClientReview, @CreatedAt, @UpdatedAt, @Version, @SkillTags)";
                 using var command = new SqlCommand(query, connection);
 
                 MapParameters(command, project);
@@ -133,7 +133,7 @@ namespace HeinHtetNaing_ADI.Services
                 var query = "UPDATE project SET client_id = @ClientId, freelancer_id = @FreelancerId, title = @Title, description = @Description, " +
                             "budget = @Budget, currency = @Currency, rating = @Rating, dead_line = @Deadline, status = @Status, " +
                             "start_date = @StartDate, end_date = @EndDate, completed = @Completed, client_rating = @ClientRating, " +
-                            "client_review = @ClientReview, updated_at = @UpdatedAt, version = @Version " +
+                            "client_review = @ClientReview, updated_at = @UpdatedAt, version = @Version, skill_tags = @SkillTags " +
                             "WHERE project_id = @ProjectId";
                 using var command = new SqlCommand(query, connection);
 
@@ -148,6 +148,7 @@ namespace HeinHtetNaing_ADI.Services
                 throw;
             }
         }
+
 
         public void DeleteProject(long projectId)
         {
@@ -178,21 +179,25 @@ namespace HeinHtetNaing_ADI.Services
             command.Parameters.AddWithValue("@Budget", project.Budget ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@Currency", project.Currency ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@Rating", project.Rating ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@Deadline", project.Deadline?.ToString("yyyy-MM-dd") ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@Deadline", project.Deadline.ToString("yyyy-MM-dd HH:mm:ss") ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@Status", project.Status ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@StartDate", project.StartDate ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@EndDate", project.EndDate ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@Completed", project.Completed ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@Completed", project.Completed.HasValue ? (object)(project.Completed.Value ? 1 : 0) : DBNull.Value);
             command.Parameters.AddWithValue("@ClientRating", project.ClientRating ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@ClientReview", project.ClientReview ?? (object)DBNull.Value);
-            command.Parameters.AddWithValue("@CreatedAt", project.CreatedAt);
-            command.Parameters.AddWithValue("@UpdatedAt", project.UpdatedAt);
+            command.Parameters.AddWithValue("@CreatedAt", project.CreatedAt ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@UpdatedAt", project.UpdatedAt ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@Version", project.Version ?? (object)DBNull.Value);
+
+            // Convert SkillTags list to a comma-separated string
+            var skillTagsString = project.SkillTags != null ? string.Join(",", project.SkillTags) : (object)DBNull.Value;
+            command.Parameters.AddWithValue("@SkillTags", skillTagsString);
         }
 
         private static Project MapReaderToProject(SqlDataReader reader)
         {
-            return new Project
+            var project = new Project
             {
                 ProjectId = reader.GetInt64(reader.GetOrdinal("project_id")),
                 ClientId = reader["client_id"] as long?,
@@ -202,18 +207,25 @@ namespace HeinHtetNaing_ADI.Services
                 Budget = reader["budget"] as decimal?,
                 Currency = reader["currency"] as string,
                 Rating = reader["rating"] as decimal?,
-                Deadline = reader["dead_line"] as DateTime?,
+                Deadline = reader["dead_line"] as DateTime? ?? default(DateTime),
                 Status = reader["status"] as string,
                 StartDate = reader["start_date"] as long?,
                 EndDate = reader["end_date"] as long?,
-                Completed = reader["completed"] as bool?,
+                Completed = reader["completed"] != DBNull.Value ? (byte)reader["completed"] == 1 : (bool?)null,
                 ClientRating = reader["client_rating"] as decimal?,
                 ClientReview = reader["client_review"] as string,
                 CreatedAt = reader.GetInt64(reader.GetOrdinal("created_at")),
                 UpdatedAt = reader.GetInt64(reader.GetOrdinal("updated_at")),
                 Version = reader["version"] as int?
             };
+
+            // Parse SkillTags back to a List<string>
+            var skillTagsString = reader["skill_tags"] as string;
+            project.SkillTags = skillTagsString?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            return project;
         }
+
     }
 
 }

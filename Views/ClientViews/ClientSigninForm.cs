@@ -66,7 +66,7 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
 
             if (success)
             {
-                Form homeForm = new ClientHomeForm(_welcomeForm);
+                Form homeForm = new ClientHomeForm(_welcomeForm, client.ClientId);
                 homeForm.Show();
                 this.Hide();
             }

@@ -22,6 +22,10 @@ namespace HeinHtetNaing_ADI.Models
         [SqlType("TEXT")] // Use TEXT for potentially long descriptions
         public string? Description { get; set; }
 
+        [SqlColumnName("skill_tags")] // Specify column name for skill_tags
+        [SqlType("TEXT")] // Stored as TEXT in the database
+        public List<string>? SkillTags { get; set; }
+
         [SqlColumnName("budget")] // Specify column name for budget
         public decimal? Budget { get; set; }
 
@@ -30,10 +34,11 @@ namespace HeinHtetNaing_ADI.Models
         public string? Currency { get; set; }
 
         [SqlColumnName("rating")] // Specify column name for rating
+        [SqlType("DECIMAL")]
         public decimal? Rating { get; set; }
 
         [SqlColumnName("dead_line")] // Specify column name for dead_line
-        public DateTime? Deadline { get; set; }
+        public DateTime Deadline { get; set; }
 
         [SqlColumnName("status")] // Specify column name for status
         [SqlType("VARCHAR(50)")] // Explicitly specify VARCHAR for status
@@ -46,6 +51,7 @@ namespace HeinHtetNaing_ADI.Models
         public long? EndDate { get; set; }
 
         [SqlColumnName("completed")] // Specify column name for completed
+        [SqlType("TINYINT")]
         public bool? Completed { get; set; }
 
         [SqlColumnName("client_rating")] // Specify column name for client_rating
@@ -69,38 +75,47 @@ namespace HeinHtetNaing_ADI.Models
         // Constructor
         public Project(
             long? clientId,
-            long? freelancerId,
             string? title,
             string? description,
+            List<String>? skillTags,
             decimal? budget,
             string? currency,
-            decimal? rating,
-            DateTime? deadline,
-            string? status,
-            long? startDate,
-            long? endDate,
-            bool? completed,
-            decimal? clientRating,
-            string? clientReview)
+            DateTime deadline,
+            long? startDate)
         {
             ProjectId = GuidUtil.GenerateNewLongGuid(); // Generate a unique project ID
             ClientId = clientId;
-            FreelancerId = freelancerId;
+            FreelancerId = null;
             Title = title;
             Description = description;
+            SkillTags = skillTags;
             Budget = budget;
             Currency = currency;
-            Rating = rating;
+            Rating = null;
             Deadline = deadline;
-            Status = status;
+            Status = "Pending";
             StartDate = startDate;
-            EndDate = endDate;
-            Completed = completed;
-            ClientRating = clientRating;
-            ClientReview = clientReview;
+            EndDate = null;
+            Completed = false;
+            ClientRating = null;
+            ClientReview = null;
             CreatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             Version = 1;
+        }
+
+        // Helper to convert SkillTags to a comma-separated string for database storage
+        public string SkillTagsToString()
+        {
+            return SkillTags != null ? string.Join(", ", SkillTags) : string.Empty;
+        }
+
+        // Helper to convert a comma-separated string back to SkillTags list
+        public static List<string> StringToSkillTags(string skillTagsString)
+        {
+            return !string.IsNullOrEmpty(skillTagsString)
+                ? skillTagsString.Split(',').Select(tag => tag.Trim()).ToList()
+                : new List<string>();
         }
     }
 }
