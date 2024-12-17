@@ -27,6 +27,7 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
 
         private void ClientHomeForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            _welcomeForm.Show();
             _welcomeForm.Close();
         }
 
@@ -95,15 +96,44 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
                     Font = new Font("Segoe UI", 12F, FontStyle.Regular),
                     ForeColor = Color.DarkRed,
                     Location = new Point(15, 109),
-                    Size = new Size(127, 29),
+                    Size = new Size(86, 29),
                     Name = "projectDetailsButton",
                 };
                 projectDetailsButton.Click += (sender, e) =>
                 {
-                    // Handle the button click event for this project
-                    MessageBox.Show($"Details for project: {project.Title}");
+                    Form clientProjectDetailsForm = new ClientProjectDetailsForm(project.ProjectId);
+                    clientProjectDetailsForm.FormClosed += (s, args) =>
+                    {
+                        // Reload the form or refresh the contents here
+                        this.ClientHomeForm_Load(sender, e);
+                    };
+                    clientProjectDetailsForm.ShowDialog();
                 };
                 projectPanel.Controls.Add(projectDetailsButton);
+
+                // Create and set the DeleteProjectButton
+                var deleteProjectButton = new Button
+                {
+                    BackColor = Color.Red,
+                    Font = new Font("Segoe UI", 12F, FontStyle.Regular),
+                    ForeColor = Color.White,
+                    Location = new Point(107, 109),
+                    Name = $"deleteProjectButton_{project.ProjectId}", // Set a dynamic name based on ProjectId
+                    Size = new Size(86, 29),
+                    Text = "Delete",
+                    UseVisualStyleBackColor = false,
+                };
+                deleteProjectButton.Click += (sender, e) =>
+                {
+                    DialogResult result = MessageBox.Show($"Are you sure you want to delete the project: {project.Title}?", "Delete Project", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (result == DialogResult.Yes)
+                    {
+                        _projectService.DeleteProject(project.ProjectId);
+                        this.ClientHomeForm_Load(sender, e);
+                        MessageBox.Show($"Project {project.Title} deleted successfully.");
+                    }
+                };
+                projectPanel.Controls.Add(deleteProjectButton);
 
                 // Create and set the Budget label
                 var projectBudgetLabel = new Label
@@ -171,6 +201,10 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
             }
         }
 
+        private void projectDetailsButton_Click(object sender, EventArgs e)
+        {
+            //False click
+        }
     }
 
 }

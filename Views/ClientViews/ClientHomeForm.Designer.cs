@@ -31,6 +31,7 @@
             projectContainerPanel = new Panel();
             projectPanel = new Panel();
             projectDescriptionTextBox = new TextBox();
+            deleteProjectButton = new Button();
             projectDetailsButton = new Button();
             projectIdLabel = new Label();
             label1 = new Label();
@@ -65,6 +66,7 @@
             // 
             projectPanel.BackColor = Color.White;
             projectPanel.Controls.Add(projectDescriptionTextBox);
+            projectPanel.Controls.Add(deleteProjectButton);
             projectPanel.Controls.Add(projectDetailsButton);
             projectPanel.Controls.Add(projectIdLabel);
             projectPanel.Controls.Add(label1);
@@ -88,16 +90,29 @@
             projectDescriptionTextBox.Size = new Size(575, 120);
             projectDescriptionTextBox.TabIndex = 2;
             // 
+            // deleteProjectButton
+            // 
+            deleteProjectButton.BackColor = Color.Red;
+            deleteProjectButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            deleteProjectButton.ForeColor = Color.White;
+            deleteProjectButton.Location = new Point(107, 109);
+            deleteProjectButton.Name = "deleteProjectButton";
+            deleteProjectButton.Size = new Size(86, 29);
+            deleteProjectButton.TabIndex = 1;
+            deleteProjectButton.Text = "Delete";
+            deleteProjectButton.UseVisualStyleBackColor = false;
+            // 
             // projectDetailsButton
             // 
             projectDetailsButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             projectDetailsButton.ForeColor = Color.DarkRed;
             projectDetailsButton.Location = new Point(15, 109);
             projectDetailsButton.Name = "projectDetailsButton";
-            projectDetailsButton.Size = new Size(127, 29);
+            projectDetailsButton.Size = new Size(86, 29);
             projectDetailsButton.TabIndex = 1;
             projectDetailsButton.Text = "Details";
             projectDetailsButton.UseVisualStyleBackColor = true;
+            projectDetailsButton.Click += projectDetailsButton_Click;
             // 
             // projectIdLabel
             // 
@@ -272,5 +287,6 @@
         private Label projectDeadLineLabel;
         private TextBox projectDescriptionTextBox;
         private Label projectIdLabel;
+        private Button deleteProjectButton;
     }
 }
