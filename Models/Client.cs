@@ -61,5 +61,19 @@ namespace HeinHtetNaing_ADI.Models
 
             return PasswordUtil.VerifyPassword(password, PasswordHash);
         }
+
+        internal void update(
+            String firstName,
+            String lastName,
+            String email,
+            String PhoneNo,
+            String Address)
+        {
+            this.FirstName = firstName;
+            this.LastName = lastName;
+            this.Email = email;
+            this.PhoneNo = PhoneNo;
+            this.Address = Address;
+        }
     }
 }

@@ -159,6 +159,7 @@ namespace HeinHtetNaing_ADI.Services
                 connection.Open();
                 using var reader = command.ExecuteReader();
 
+                // Read all freelancers in one go
                 var freelancers = new List<Freelancer>();
                 while (reader.Read())
                 {
@@ -170,6 +171,7 @@ namespace HeinHtetNaing_ADI.Services
                 using var countCommand = new SqlCommand(countQuery, connection);
                 var totalCount = Convert.ToInt32(countCommand.ExecuteScalar());
 
+                // Return paginated result
                 return new PagedResult<Freelancer>(freelancers, totalCount, offset, pageSize);
             }
             catch (SqlException ex)
@@ -212,5 +214,6 @@ namespace HeinHtetNaing_ADI.Services
             };
         }
     }
+
 
 }

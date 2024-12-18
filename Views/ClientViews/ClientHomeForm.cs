@@ -8,7 +8,9 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
 
         private Form _welcomeForm;
         private List<Project> _projects;
+        private Client _client;
         private ProjectService _projectService;
+        private ClientService _clientService;
         private long _clientId;
 
         public ClientHomeForm(Form welcomeForm, long clientId)
@@ -17,11 +19,27 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
             this.StartPosition = FormStartPosition.CenterScreen;
             this._welcomeForm = welcomeForm;
             _projectService = new ProjectService();
+            _clientService = new ClientService();
+
+            //Client not found should not be occured anyway.
+            _client = _clientService.GetClientById(_clientId);
+            if (_client == null)
+            {
+                MessageBox.Show($"Client with ID {_clientId} not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return; // Exit the method to prevent further execution
+            }
             InitializeComponent();
         }
         private void ClientHomeForm_Load(object sender, EventArgs e)
         {
-            _projects = _projectService.GetAllProjects().ToList();
+            _projects = _projectService.GetAllProjectsByClientId(_clientId).ToList();
+            this.userNameLabel.Text = "Hello " + _client.FirstName + " " + _client.LastName;
+            this.firstNameTextBox.Text = _client.FirstName ?? string.Empty;
+            this.lastNameTextBox.Text = _client.LastName ?? string.Empty;
+            this.emailTextBox.Text = _client.Email ?? string.Empty;
+            this.phoneNoTextBox.Text = _client.PhoneNo ?? string.Empty;
+            this.addressTextBox.Text = _client.Address ?? string.Empty;
+            postProjectButton.Focus();
             LoadProjects();
         }
 
@@ -42,10 +60,39 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
             postProjectForm.ShowDialog();
         }
 
-        private void projectBudgetLabel_Click(object sender, EventArgs e)
+        private void updateUserButton_Click(object sender, EventArgs e)
         {
-            //False click
+            var result = MessageBox.Show(
+            "Are you sure you want to update user information?",
+            "Confirm Update",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question
+);
+
+            if (result == DialogResult.Yes)
+            {
+
+                _client.FirstName = this.firstNameTextBox.Text;
+                _client.LastName = this.lastNameTextBox.Text;
+                _client.Email = this.emailTextBox.Text;
+                _client.PhoneNo = this.phoneNoTextBox.Text;
+                _client.Address = this.addressTextBox.Text;
+
+                _clientService.UpdateClient(_client);
+
+                // Proceed with the update logic here
+                MessageBox.Show(
+                    "User updated successfully!",
+                    "Update",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                    );
+
+                this.ClientHomeForm_Load(sender, e);
+            }
+
         }
+
         private void LoadProjects()
         {
             // Clear any existing panels before adding new ones
@@ -87,6 +134,7 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
                     ReadOnly = true,
                     Name = "projectDescriptionTextBox"
                 };
+                projectDescriptionTextBox.GotFocus += (s, ev) => this.Focus();
                 projectPanel.Controls.Add(projectDescriptionTextBox);
 
                 // Create and set the ProjectDetailsButton
@@ -98,6 +146,7 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
                     Location = new Point(15, 109),
                     Size = new Size(86, 29),
                     Name = "projectDetailsButton",
+
                 };
                 projectDetailsButton.Click += (sender, e) =>
                 {
@@ -201,10 +250,6 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
             }
         }
 
-        private void projectDetailsButton_Click(object sender, EventArgs e)
-        {
-            //False click
-        }
     }
 
 }

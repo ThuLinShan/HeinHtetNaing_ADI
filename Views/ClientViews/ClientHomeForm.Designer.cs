@@ -42,11 +42,24 @@
             projectTitleLabel = new Label();
             noProjectLabel = new Label();
             clientProfilePanel = new Panel();
+            userDetailsLabel = new Label();
+            updateUserButton = new Button();
+            addressTextBox = new TextBox();
+            phoneNoTextBox = new TextBox();
+            emailTextBox = new TextBox();
+            lastNameTextBox = new TextBox();
+            firstNameTextBox = new TextBox();
+            addressLabel = new Label();
+            phoneNoLabel = new Label();
+            emailLabel = new Label();
+            lastNameLabel = new Label();
+            firstNameLabel = new Label();
             userNameLabel = new Label();
             panel1 = new Panel();
             postProjectButton = new Button();
             projectContainerPanel.SuspendLayout();
             projectPanel.SuspendLayout();
+            clientProfilePanel.SuspendLayout();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -78,7 +91,7 @@
             projectPanel.Location = new Point(22, 22);
             projectPanel.Name = "projectPanel";
             projectPanel.Size = new Size(802, 152);
-            projectPanel.TabIndex = 1;
+            projectPanel.TabIndex = 10;
             // 
             // projectDescriptionTextBox
             // 
@@ -87,6 +100,7 @@
             projectDescriptionTextBox.Location = new Point(211, 18);
             projectDescriptionTextBox.Multiline = true;
             projectDescriptionTextBox.Name = "projectDescriptionTextBox";
+            projectDescriptionTextBox.ReadOnly = true;
             projectDescriptionTextBox.Size = new Size(575, 120);
             projectDescriptionTextBox.TabIndex = 2;
             // 
@@ -112,7 +126,6 @@
             projectDetailsButton.TabIndex = 1;
             projectDetailsButton.Text = "Details";
             projectDetailsButton.UseVisualStyleBackColor = true;
-            projectDetailsButton.Click += projectDetailsButton_Click;
             // 
             // projectIdLabel
             // 
@@ -147,7 +160,6 @@
             projectCurrencyLabel.Size = new Size(39, 17);
             projectCurrencyLabel.TabIndex = 0;
             projectCurrencyLabel.Text = "GBP";
-            projectCurrencyLabel.Click += projectBudgetLabel_Click;
             // 
             // projectBudgetLabel
             // 
@@ -159,7 +171,6 @@
             projectBudgetLabel.Size = new Size(56, 17);
             projectBudgetLabel.TabIndex = 0;
             projectBudgetLabel.Text = "100000";
-            projectBudgetLabel.Click += projectBudgetLabel_Click;
             // 
             // projectDeadLineLabel
             // 
@@ -205,10 +216,157 @@
             // clientProfilePanel
             // 
             clientProfilePanel.BackColor = Color.SeaShell;
+            clientProfilePanel.Controls.Add(userDetailsLabel);
+            clientProfilePanel.Controls.Add(updateUserButton);
+            clientProfilePanel.Controls.Add(addressTextBox);
+            clientProfilePanel.Controls.Add(phoneNoTextBox);
+            clientProfilePanel.Controls.Add(emailTextBox);
+            clientProfilePanel.Controls.Add(lastNameTextBox);
+            clientProfilePanel.Controls.Add(firstNameTextBox);
+            clientProfilePanel.Controls.Add(addressLabel);
+            clientProfilePanel.Controls.Add(phoneNoLabel);
+            clientProfilePanel.Controls.Add(emailLabel);
+            clientProfilePanel.Controls.Add(lastNameLabel);
+            clientProfilePanel.Controls.Add(firstNameLabel);
             clientProfilePanel.Location = new Point(12, 65);
             clientProfilePanel.Name = "clientProfilePanel";
             clientProfilePanel.Size = new Size(308, 584);
             clientProfilePanel.TabIndex = 1;
+            // 
+            // userDetailsLabel
+            // 
+            userDetailsLabel.AutoSize = true;
+            userDetailsLabel.Font = new Font("Arial", 18F, FontStyle.Bold | FontStyle.Underline, GraphicsUnit.Point, 0);
+            userDetailsLabel.ForeColor = Color.DarkRed;
+            userDetailsLabel.Location = new Point(16, 37);
+            userDetailsLabel.Name = "userDetailsLabel";
+            userDetailsLabel.Size = new Size(150, 29);
+            userDetailsLabel.TabIndex = 2;
+            userDetailsLabel.Text = "User Details";
+            // 
+            // updateUserButton
+            // 
+            updateUserButton.BackColor = Color.Maroon;
+            updateUserButton.FlatStyle = FlatStyle.Popup;
+            updateUserButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            updateUserButton.ForeColor = Color.White;
+            updateUserButton.Location = new Point(16, 477);
+            updateUserButton.Name = "updateUserButton";
+            updateUserButton.Size = new Size(273, 47);
+            updateUserButton.TabIndex = 0;
+            updateUserButton.Text = "Update Details";
+            updateUserButton.UseVisualStyleBackColor = false;
+            updateUserButton.Click += updateUserButton_Click;
+            // 
+            // addressTextBox
+            // 
+            addressTextBox.BackColor = Color.RosyBrown;
+            addressTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            addressTextBox.ForeColor = Color.White;
+            addressTextBox.Location = new Point(16, 410);
+            addressTextBox.Name = "addressTextBox";
+            addressTextBox.Size = new Size(273, 29);
+            addressTextBox.TabIndex = 1;
+            // 
+            // phoneNoTextBox
+            // 
+            phoneNoTextBox.BackColor = Color.RosyBrown;
+            phoneNoTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            phoneNoTextBox.ForeColor = Color.White;
+            phoneNoTextBox.Location = new Point(16, 329);
+            phoneNoTextBox.Name = "phoneNoTextBox";
+            phoneNoTextBox.Size = new Size(273, 29);
+            phoneNoTextBox.TabIndex = 1;
+            // 
+            // emailTextBox
+            // 
+            emailTextBox.BackColor = Color.RosyBrown;
+            emailTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            emailTextBox.ForeColor = Color.White;
+            emailTextBox.Location = new Point(16, 253);
+            emailTextBox.Name = "emailTextBox";
+            emailTextBox.Size = new Size(273, 29);
+            emailTextBox.TabIndex = 1;
+            // 
+            // lastNameTextBox
+            // 
+            lastNameTextBox.BackColor = Color.RosyBrown;
+            lastNameTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lastNameTextBox.ForeColor = Color.White;
+            lastNameTextBox.Location = new Point(16, 178);
+            lastNameTextBox.Name = "lastNameTextBox";
+            lastNameTextBox.Size = new Size(273, 29);
+            lastNameTextBox.TabIndex = 1;
+            // 
+            // firstNameTextBox
+            // 
+            firstNameTextBox.BackColor = Color.RosyBrown;
+            firstNameTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            firstNameTextBox.ForeColor = Color.White;
+            firstNameTextBox.Location = new Point(16, 105);
+            firstNameTextBox.Name = "firstNameTextBox";
+            firstNameTextBox.Size = new Size(273, 29);
+            firstNameTextBox.TabIndex = 1;
+            // 
+            // addressLabel
+            // 
+            addressLabel.AutoSize = true;
+            addressLabel.BackColor = Color.Transparent;
+            addressLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            addressLabel.ForeColor = Color.DarkRed;
+            addressLabel.Location = new Point(16, 386);
+            addressLabel.Name = "addressLabel";
+            addressLabel.Size = new Size(81, 21);
+            addressLabel.TabIndex = 0;
+            addressLabel.Text = "Address  : ";
+            // 
+            // phoneNoLabel
+            // 
+            phoneNoLabel.AutoSize = true;
+            phoneNoLabel.BackColor = Color.Transparent;
+            phoneNoLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            phoneNoLabel.ForeColor = Color.DarkRed;
+            phoneNoLabel.Location = new Point(16, 305);
+            phoneNoLabel.Name = "phoneNoLabel";
+            phoneNoLabel.Size = new Size(90, 21);
+            phoneNoLabel.TabIndex = 0;
+            phoneNoLabel.Text = "Phone No : ";
+            // 
+            // emailLabel
+            // 
+            emailLabel.AutoSize = true;
+            emailLabel.BackColor = Color.Transparent;
+            emailLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            emailLabel.ForeColor = Color.DarkRed;
+            emailLabel.Location = new Point(16, 229);
+            emailLabel.Name = "emailLabel";
+            emailLabel.Size = new Size(59, 21);
+            emailLabel.TabIndex = 0;
+            emailLabel.Text = "Email : ";
+            // 
+            // lastNameLabel
+            // 
+            lastNameLabel.AutoSize = true;
+            lastNameLabel.BackColor = Color.Transparent;
+            lastNameLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lastNameLabel.ForeColor = Color.DarkRed;
+            lastNameLabel.Location = new Point(16, 154);
+            lastNameLabel.Name = "lastNameLabel";
+            lastNameLabel.Size = new Size(95, 21);
+            lastNameLabel.TabIndex = 0;
+            lastNameLabel.Text = "Last Name : ";
+            // 
+            // firstNameLabel
+            // 
+            firstNameLabel.AutoSize = true;
+            firstNameLabel.BackColor = Color.Transparent;
+            firstNameLabel.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            firstNameLabel.ForeColor = Color.DarkRed;
+            firstNameLabel.Location = new Point(16, 84);
+            firstNameLabel.Name = "firstNameLabel";
+            firstNameLabel.Size = new Size(97, 21);
+            firstNameLabel.TabIndex = 0;
+            firstNameLabel.Text = "First Name : ";
             // 
             // userNameLabel
             // 
@@ -235,7 +393,7 @@
             // postProjectButton
             // 
             postProjectButton.BackColor = Color.Maroon;
-            postProjectButton.FlatStyle = FlatStyle.Flat;
+            postProjectButton.FlatStyle = FlatStyle.Popup;
             postProjectButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             postProjectButton.ForeColor = Color.White;
             postProjectButton.Location = new Point(959, 0);
@@ -264,6 +422,8 @@
             projectContainerPanel.PerformLayout();
             projectPanel.ResumeLayout(false);
             projectPanel.PerformLayout();
+            clientProfilePanel.ResumeLayout(false);
+            clientProfilePanel.PerformLayout();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ResumeLayout(false);
@@ -288,5 +448,17 @@
         private TextBox projectDescriptionTextBox;
         private Label projectIdLabel;
         private Button deleteProjectButton;
+        private Label firstNameLabel;
+        private Label emailLabel;
+        private Label lastNameLabel;
+        private Label phoneNoLabel;
+        private Label addressLabel;
+        private TextBox addressTextBox;
+        private TextBox phoneNoTextBox;
+        private TextBox emailTextBox;
+        private TextBox lastNameTextBox;
+        private TextBox firstNameTextBox;
+        private Label userDetailsLabel;
+        private Button updateUserButton;
     }
 }

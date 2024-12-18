@@ -125,6 +125,53 @@ namespace HeinHtetNaing_ADI.Services
             }
         }
 
+        public IEnumerable<Project> GetAllProjectsByClientId(long clientId)
+        {
+            try
+            {
+                using var connection = _databaseService.GetConnection();
+                var query = "SELECT * FROM project WHERE client_id = @ClientId";
+                using var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@ClientId", clientId);
+
+                connection.Open();
+                using var reader = command.ExecuteReader();
+
+                var projects = new List<Project>();
+                while (reader.Read())
+                {
+                    projects.Add(MapReaderToProject(reader));
+                }
+                return projects;
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL Error: {ex.Message}");
+                throw;
+            }
+        }
+
+
+        public int GetTotalProjectsByClientId(long clientId)
+        {
+            try
+            {
+                using var connection = _databaseService.GetConnection();
+                var query = "SELECT COUNT(*) FROM project WHERE client_id = @ClientId";
+                using var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@ClientId", clientId);
+
+                connection.Open();
+                return Convert.ToInt32(command.ExecuteScalar());
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL Error: {ex.Message}");
+                throw;
+            }
+        }
+
+
         public void UpdateProject(Project project)
         {
             try

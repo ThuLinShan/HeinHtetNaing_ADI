@@ -5,46 +5,46 @@ namespace HeinHtetNaing_ADI.Models
 {
     public class Freelancer
     {
-        [SqlColumnName("freelancer_id")] // Specify column name for freelancer_id
+        [SqlColumnName("freelancer_id")]
         public long FreelancerId { get; set; }
 
-        [SqlColumnName("first_name")] // Specify column name for first_name
-        [SqlType("VARCHAR(255)")]     // Adjusted VARCHAR size for first name
+        [SqlColumnName("first_name")]
+        [SqlType("VARCHAR(255)")]
         public string? FirstName { get; set; }
 
-        [SqlColumnName("last_name")] // Specify column name for last_name
-        [SqlType("VARCHAR(255)")]    // Adjusted VARCHAR size for last name
+        [SqlColumnName("last_name")]
+        [SqlType("VARCHAR(255)")]
         public string? LastName { get; set; }
 
-        [SqlColumnName("email")] // Specify column name for email
-        [SqlType("VARCHAR(320)")]  // Set to 320, maximum length for valid email addresses
+        [SqlColumnName("email")]
+        [SqlType("VARCHAR(320)")]
         public string? Email { get; set; }
 
-        [SqlColumnName("password_hash")] // Specify column name for password_hash
-        [SqlType("VARCHAR(255)")]         // Adjusted size for hash storage
-        public string? PasswordHash { get; set; } // Private setter to ensure controlled updates
+        [SqlColumnName("password_hash")]
+        [SqlType("VARCHAR(255)")]
+        public string? PasswordHash { get; set; }
 
-        [SqlColumnName("address")]   // Specify column name for address
-        [SqlType("TEXT")]            // Changed to TEXT for longer addresses
+        [SqlColumnName("address")]
+        [SqlType("TEXT")]
         public string? Address { get; set; }
 
-        [SqlColumnName("phone_no")] // Specify column name for phone_no
-        [SqlType("VARCHAR(15)")]    // Adjusted size for phone numbers
+        [SqlColumnName("phone_no")]
+        [SqlType("VARCHAR(15)")]
         public string? PhoneNo { get; set; }
 
-        [SqlColumnName("best_project")] // Specify column name for best_project
-        public long? BestProject { get; set; } // Nullable, referencing a project ID
+        [SqlColumnName("best_project")]
+        public long? BestProject { get; set; }
 
-        [SqlColumnName("website_link")] // Specify column name for website_link
-        [SqlType("VARCHAR(2083)")]      // Maximum length for URLs as per standards
+        [SqlColumnName("website_link")]
+        [SqlType("VARCHAR(2083)")]
         public string? WebsiteLink { get; set; }
 
-        [SqlColumnName("image")]  // Specify column name for image
-        [SqlType("TEXT")]         // Changed to TEXT for image URLs or paths
+        [SqlColumnName("image")]
+        [SqlType("TEXT")]
         public string? Image { get; set; }
 
-        [SqlColumnName("rating")] // Specify column name for rating
-        public decimal? Rating { get; set; } // Nullable, for cases where rating is not yet provided
+        [SqlColumnName("rating")]
+        public decimal? Rating { get; set; }
 
 
         public Freelancer()
