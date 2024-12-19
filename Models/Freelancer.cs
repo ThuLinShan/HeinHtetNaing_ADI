@@ -66,11 +66,10 @@ namespace HeinHtetNaing_ADI.Models
             WebsiteLink = websiteLink;
             Image = image;
             Rating = rating;
-
             PasswordHash = PasswordUtil.HashPassword(password);
         }
 
-        public bool VerifyPassword(string password)
+        internal bool Login(string password)
         {
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(PasswordHash))
             {

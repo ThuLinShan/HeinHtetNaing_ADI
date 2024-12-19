@@ -1,4 +1,5 @@
 using HeinHtetNaing_ADI.Views.ClientViews;
+using HeinHtetNaing_ADI.Views.FreelancerViews;
 
 namespace HeinHtetNaing_ADI
 {
@@ -22,6 +23,12 @@ namespace HeinHtetNaing_ADI
             clientSigninForm.Show();
         }
 
+        private void freeLancerLabelLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            var freelancerSigninForm = new FreelancerSigninForm(this);
+            this.Hide();
+            freelancerSigninForm.Show();
+        }
         private void Welcome_FormClosing(object sender, FormClosingEventArgs e)
         {
             var result = MessageBox.Show(
@@ -34,5 +41,6 @@ namespace HeinHtetNaing_ADI
                 e.Cancel = true;
             }
         }
+
     }
 }

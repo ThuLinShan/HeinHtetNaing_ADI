@@ -1,6 +1,7 @@
 ﻿using HeinHtetNaing_ADI.Common.DTOs;
 using HeinHtetNaing_ADI.Models;
 using Microsoft.Data.SqlClient;
+using System.Text;
 
 namespace HeinHtetNaing_ADI.Services
 {
@@ -19,14 +20,63 @@ namespace HeinHtetNaing_ADI.Services
             try
             {
                 using var connection = _databaseService.GetConnection();
-                var query = "INSERT INTO freelancer (freelancer_id, first_name, last_name, email, password_hash, address, phone_no, best_project, website_link, image, rating) " +
-                            "VALUES (@FreelancerId, @FirstName, @LastName, @Email, @PasswordHash, @Address, @PhoneNo, @BestProject, @WebsiteLink, @Image, @Rating)";
-                using var command = new SqlCommand(query, connection);
-
-                MapParameters(command, freelancer);
-
                 connection.Open();
-                command.ExecuteNonQuery();
+
+                // Start a transaction to ensure data consistency
+                using var transaction = connection.BeginTransaction();
+
+                try
+                {
+                    // Insert freelancer into the freelancer table
+                    var freelancerQuery = "INSERT INTO freelancer (freelancer_id, first_name, last_name, email, password_hash, address, phone_no, best_project, website_link, image, rating) " +
+                                          "VALUES (@FreelancerId, @FirstName, @LastName, @Email, @PasswordHash, @Address, @PhoneNo, @BestProject, @WebsiteLink, @Image, @Rating)";
+                    using (var freelancerCommand = new SqlCommand(freelancerQuery, connection, transaction))
+                    {
+                        MapParameters(freelancerCommand, freelancer);
+                        freelancerCommand.ExecuteNonQuery();
+                    }
+
+                    // Insert skills into the skill table
+                    if (freelancer.Skills != null && freelancer.Skills.Count > 0)
+                    {
+                        var skillQuery = new StringBuilder("INSERT INTO skill (skill_id, freelancer_id, skill_name, skill_level) VALUES ");
+
+                        // Build a single SQL statement with multiple rows
+                        for (int i = 0; i < freelancer.Skills.Count; i++)
+                        {
+                            var skill = freelancer.Skills[i];
+                            skillQuery.Append($"(@SkillId{i}, @FreelancerId{i}, @SkillName{i}, @SkillLevel{i})");
+                            if (i < freelancer.Skills.Count - 1)
+                            {
+                                skillQuery.Append(", ");
+                            }
+                        }
+
+                        using var skillCommand = new SqlCommand(skillQuery.ToString(), connection, transaction);
+
+                        // Add parameters for each skill
+                        for (int i = 0; i < freelancer.Skills.Count; i++)
+                        {
+                            var skill = freelancer.Skills[i];
+                            skillCommand.Parameters.AddWithValue($"@SkillId{i}", skill.SkillId);
+                            skillCommand.Parameters.AddWithValue($"@FreelancerId{i}", freelancer.FreelancerId);
+                            skillCommand.Parameters.AddWithValue($"@SkillName{i}", skill.SkillName ?? (object)DBNull.Value);
+                            skillCommand.Parameters.AddWithValue($"@SkillLevel{i}", skill.SkillLevel ?? (object)DBNull.Value);
+                        }
+
+                        // Execute the batch insert
+                        skillCommand.ExecuteNonQuery();
+                    }
+
+                    // Commit the transaction
+                    transaction.Commit();
+                }
+                catch (Exception)
+                {
+                    // Rollback the transaction in case of an error
+                    transaction.Rollback();
+                    throw;
+                }
             }
             catch (SqlException ex)
             {
@@ -77,6 +127,10 @@ namespace HeinHtetNaing_ADI.Services
                 if (reader.Read())
                 {
                     var freelancer = MapReaderToFreelancer(reader);
+
+                    // Close the reader before calling another command
+                    reader.Close();
+
                     freelancer.Skills = GetSkillsByFreelancerId(freelancer.FreelancerId, connection);
                     return freelancer;
                 }
@@ -88,6 +142,7 @@ namespace HeinHtetNaing_ADI.Services
                 throw;
             }
         }
+
 
         public IEnumerable<Freelancer> GetAllFreelancers()
         {
@@ -165,12 +220,36 @@ namespace HeinHtetNaing_ADI.Services
             try
             {
                 using var connection = _databaseService.GetConnection();
-                var query = "DELETE FROM freelancer WHERE freelancer_id = @FreelancerId";
-                using var command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@FreelancerId", freelancerId);
-
                 connection.Open();
-                command.ExecuteNonQuery();
+
+                using var transaction = connection.BeginTransaction();
+                try
+                {
+                    // Delete skills associated with the freelancer
+                    var deleteSkillsQuery = "DELETE FROM skill WHERE freelancer_id = @FreelancerId";
+                    using (var deleteSkillsCommand = new SqlCommand(deleteSkillsQuery, connection, transaction))
+                    {
+                        deleteSkillsCommand.Parameters.AddWithValue("@FreelancerId", freelancerId);
+                        deleteSkillsCommand.ExecuteNonQuery();
+                    }
+
+                    // Delete the freelancer
+                    var deleteFreelancerQuery = "DELETE FROM freelancer WHERE freelancer_id = @FreelancerId";
+                    using (var deleteFreelancerCommand = new SqlCommand(deleteFreelancerQuery, connection, transaction))
+                    {
+                        deleteFreelancerCommand.Parameters.AddWithValue("@FreelancerId", freelancerId);
+                        deleteFreelancerCommand.ExecuteNonQuery();
+                    }
+
+                    // Commit transaction
+                    transaction.Commit();
+                }
+                catch
+                {
+                    // Rollback transaction in case of an error
+                    transaction.Rollback();
+                    throw;
+                }
             }
             catch (SqlException ex)
             {
@@ -178,6 +257,7 @@ namespace HeinHtetNaing_ADI.Services
                 throw;
             }
         }
+
 
         public PagedResult<Freelancer> GetPagedFreelancer(int pageNumber, int pageSize)
         {
@@ -274,7 +354,7 @@ namespace HeinHtetNaing_ADI.Services
 
             try
             {
-                var query = "SELECT * FROM skills WHERE freelancer_id = @FreelancerId";
+                var query = "SELECT * FROM skill WHERE freelancer_id = @FreelancerId";
                 using var command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@FreelancerId", freelancerId);
 
@@ -306,7 +386,7 @@ namespace HeinHtetNaing_ADI.Services
             var idList = string.Join(",", freelancerIds);
 
             // Query to fetch all skills for the given freelancer IDs
-            var query = $"SELECT * FROM skills WHERE freelancer_id IN ({idList})";
+            var query = $"SELECT * FROM skill WHERE freelancer_id IN ({idList})";
             using var command = new SqlCommand(query, connection);
 
             using var reader = command.ExecuteReader();

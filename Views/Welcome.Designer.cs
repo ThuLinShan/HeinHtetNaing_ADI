@@ -108,6 +108,7 @@
             freeLancerLabelLink.TabIndex = 2;
             freeLancerLabelLink.TabStop = true;
             freeLancerLabelLink.Text = "FreeLancer";
+            freeLancerLabelLink.LinkClicked += freeLancerLabelLink_LinkClicked;
             // 
             // WelcomeLabel
             // 
