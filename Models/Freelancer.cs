@@ -46,6 +46,7 @@ namespace HeinHtetNaing_ADI.Models
         [SqlColumnName("rating")]
         public decimal? Rating { get; set; }
 
+        public List<Skill> Skills { get; set; } = new();
 
         public Freelancer()
         {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using System.Diagnostics;
 
 namespace HeinHtetNaing_ADI.Services
 {
@@ -8,23 +9,40 @@ namespace HeinHtetNaing_ADI.Services
 
         public DatabaseService()
         {
-            string projectDirectory = AppContext.BaseDirectory;
-
-            while (!string.IsNullOrEmpty(projectDirectory) && !projectDirectory.EndsWith("HeinHtetNaing_ADI"))
+            if (IsDevelopmentEnvironment())
             {
-                projectDirectory = Directory.GetParent(projectDirectory)?.FullName;
-            }
+                // Use project directory in development environment
+                string projectDirectory = AppContext.BaseDirectory;
 
-            if (projectDirectory != null)
-            {
-                string databaseFilePath = Path.Combine(projectDirectory, "Database", "Freelancing_Project.mdf");
+                while (!string.IsNullOrEmpty(projectDirectory) && !projectDirectory.EndsWith("HeinHtetNaing_ADI"))
+                {
+                    projectDirectory = Directory.GetParent(projectDirectory)?.FullName;
+                }
 
-                this._connectionString = $@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={databaseFilePath};Integrated Security=True";
+                if (projectDirectory != null)
+                {
+                    string databaseFilePath = Path.Combine(projectDirectory, "Database", "Freelancing_Project.mdf");
+                    this._connectionString = $@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={databaseFilePath};Integrated Security=True";
+                }
+                else
+                {
+                    throw new InvalidOperationException("Project directory could not be determined.");
+                }
             }
             else
             {
-                throw new InvalidOperationException("Project directory could not be determined.");
+                // Use output directory in published environment
+                string databaseFileName = "Freelancing_Project.mdf";
+                string outputDirectory = AppContext.BaseDirectory;
+                string databaseFilePath = Path.Combine(outputDirectory, "Database", databaseFileName);
+                this._connectionString = $@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={databaseFilePath};Integrated Security=True";
             }
+        }
+
+        private bool IsDevelopmentEnvironment()
+        {
+            // Check if the application is running in a debugger
+            return Debugger.IsAttached;
         }
 
         public SqlConnection GetConnection()

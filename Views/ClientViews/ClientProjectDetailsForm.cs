@@ -36,6 +36,8 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
             projectFreeLancerNameLabel.Text = _project.FreelancerId != null ? "Username" : "None";
             deadLineLabel.Text = _project.Deadline.ToString("yyyy-MM-dd");
             projectDescriptionTextBox.Text = _project.Description;
+            projectTitleLabel.Text = _project.Title;
+            totalBidLabel.Text = "Total bids : " + _bidList.Count.ToString();
 
             if (_project.FreelancerId != null)
             {

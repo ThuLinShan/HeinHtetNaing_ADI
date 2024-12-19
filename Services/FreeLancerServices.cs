@@ -13,6 +13,7 @@ namespace HeinHtetNaing_ADI.Services
             _databaseService = new DatabaseService();
         }
 
+        #region freelancer
         public void AddFreelancer(Freelancer freelancer)
         {
             try
@@ -45,7 +46,14 @@ namespace HeinHtetNaing_ADI.Services
 
                 connection.Open();
                 using var reader = command.ExecuteReader();
-                return reader.Read() ? MapReaderToFreelancer(reader) : null;
+
+                if (reader.Read())
+                {
+                    var freelancer = MapReaderToFreelancer(reader);
+                    freelancer.Skills = GetSkillsByFreelancerId(freelancerId, connection);
+                    return freelancer;
+                }
+                return null;
             }
             catch (SqlException ex)
             {
@@ -65,7 +73,14 @@ namespace HeinHtetNaing_ADI.Services
 
                 connection.Open();
                 using var reader = command.ExecuteReader();
-                return reader.Read() ? MapReaderToFreelancer(reader) : null;
+
+                if (reader.Read())
+                {
+                    var freelancer = MapReaderToFreelancer(reader);
+                    freelancer.Skills = GetSkillsByFreelancerId(freelancer.FreelancerId, connection);
+                    return freelancer;
+                }
+                return null;
             }
             catch (SqlException ex)
             {
@@ -79,17 +94,41 @@ namespace HeinHtetNaing_ADI.Services
             try
             {
                 using var connection = _databaseService.GetConnection();
-                var query = "SELECT * FROM freelancer";
-                using var command = new SqlCommand(query, connection);
+
+                // Step 1: Retrieve all freelancers
+                var freelancersQuery = "SELECT * FROM freelancer";
+                using var command = new SqlCommand(freelancersQuery, connection);
 
                 connection.Open();
                 using var reader = command.ExecuteReader();
 
                 var freelancers = new List<Freelancer>();
+                var freelancerIds = new List<long>();
+
                 while (reader.Read())
                 {
-                    freelancers.Add(MapReaderToFreelancer(reader));
+                    var freelancer = MapReaderToFreelancer(reader);
+                    freelancers.Add(freelancer);
+                    freelancerIds.Add(freelancer.FreelancerId);
                 }
+
+                // If no freelancers exist, return an empty list
+                if (!freelancers.Any())
+                {
+                    return freelancers;
+                }
+
+                // Step 2: Fetch all skills in a single query for the collected freelancer IDs
+                var skills = GetSkillsByFreelancerIds(freelancerIds, connection);
+
+                // Step 3: Map skills to their respective freelancers
+                foreach (var freelancer in freelancers)
+                {
+                    freelancer.Skills = skills.ContainsKey(freelancer.FreelancerId)
+                        ? skills[freelancer.FreelancerId]
+                        : new List<Skill>();
+                }
+
                 return freelancers;
             }
             catch (SqlException ex)
@@ -180,7 +219,118 @@ namespace HeinHtetNaing_ADI.Services
                 throw;
             }
         }
+        #endregion
 
+        #region skill
+        public void AddSkillToFreelancer(long freelancerId, Skill skill)
+        {
+            try
+            {
+                using var connection = _databaseService.GetConnection();
+                var query = "INSERT INTO skills (freelancer_id, skill_name, skill_level) " +
+                            "VALUES (@FreelancerId, @SkillName, @SkillLevel)";
+                using var command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@FreelancerId", freelancerId);
+                command.Parameters.AddWithValue("@SkillName", skill.SkillName ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@SkillLevel", skill.SkillLevel ?? (object)DBNull.Value);
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        public void UpdateSkill(Skill skill)
+        {
+            try
+            {
+                using var connection = _databaseService.GetConnection();
+                var query = "UPDATE skills SET skill_name = @SkillName, skill_level = @SkillLevel " +
+                            "WHERE skill_id = @SkillId";
+                using var command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@SkillId", skill.SkillId);
+                command.Parameters.AddWithValue("@SkillName", skill.SkillName ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@SkillLevel", skill.SkillLevel ?? (object)DBNull.Value);
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        private List<Skill> GetSkillsByFreelancerId(long freelancerId, SqlConnection connection)
+        {
+            var skills = new List<Skill>();
+
+            try
+            {
+                var query = "SELECT * FROM skills WHERE freelancer_id = @FreelancerId";
+                using var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@FreelancerId", freelancerId);
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    var skill = MapReaderToSkill(reader);
+                    skills.Add(skill);
+                }
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL Error when fetching skills: {ex.Message}");
+                throw;
+            }
+
+            return skills;
+        }
+
+        private Dictionary<long, List<Skill>> GetSkillsByFreelancerIds(IEnumerable<long> freelancerIds, SqlConnection connection)
+        {
+            // If no freelancer IDs are provided, return an empty dictionary
+            if (!freelancerIds.Any())
+            {
+                return new Dictionary<long, List<Skill>>();
+            }
+
+            // Prepare a comma-separated list of freelancer IDs for the SQL query
+            var idList = string.Join(",", freelancerIds);
+
+            // Query to fetch all skills for the given freelancer IDs
+            var query = $"SELECT * FROM skills WHERE freelancer_id IN ({idList})";
+            using var command = new SqlCommand(query, connection);
+
+            using var reader = command.ExecuteReader();
+
+            // Group skills by freelancer_id
+            var skillsByFreelancerId = new Dictionary<long, List<Skill>>();
+            while (reader.Read())
+            {
+                var skill = MapReaderToSkill(reader);
+                var freelancerId = reader.GetInt64(reader.GetOrdinal("freelancer_id"));
+
+                if (!skillsByFreelancerId.ContainsKey(freelancerId))
+                {
+                    skillsByFreelancerId[freelancerId] = new List<Skill>();
+                }
+                skillsByFreelancerId[freelancerId].Add(skill);
+            }
+
+            return skillsByFreelancerId;
+        }
+        #endregion
+
+
+        #region Helpers
         private static void MapParameters(SqlCommand command, Freelancer freelancer)
         {
             command.Parameters.AddWithValue("@FreelancerId", freelancer.FreelancerId);
@@ -194,6 +344,17 @@ namespace HeinHtetNaing_ADI.Services
             command.Parameters.AddWithValue("@WebsiteLink", freelancer.WebsiteLink ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@Image", freelancer.Image ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@Rating", freelancer.Rating ?? (object)DBNull.Value);
+        }
+
+        private static Skill MapReaderToSkill(SqlDataReader reader)
+        {
+            return new Skill
+            {
+                SkillId = reader.GetInt64(reader.GetOrdinal("skill_id")),
+                FreelancerId = reader["freelancer_id"] as long?,
+                SkillName = reader["skill_name"] as string,
+                SkillLevel = reader["skill_level"] as string
+            };
         }
 
         private static Freelancer MapReaderToFreelancer(SqlDataReader reader)
@@ -210,10 +371,10 @@ namespace HeinHtetNaing_ADI.Services
                 BestProject = reader["best_project"] as long?,
                 WebsiteLink = reader["website_link"] as string,
                 Image = reader["image"] as string,
-                Rating = reader["rating"] as decimal?
+                Rating = reader["rating"] as decimal?,
+                Skills = new List<Skill>() // Initialize as an empty list by default
             };
         }
+        #endregion
     }
-
-
 }
