@@ -73,7 +73,7 @@
             clientSignupPanel.Location = new Point(341, -6);
             clientSignupPanel.Name = "clientSignupPanel";
             clientSignupPanel.Size = new Size(503, 673);
-            clientSignupPanel.TabIndex = 2;
+            clientSignupPanel.TabIndex = 10;
             // 
             // backButton
             // 
@@ -121,7 +121,7 @@
             signinButton.Location = new Point(27, 446);
             signinButton.Name = "signinButton";
             signinButton.Size = new Size(439, 41);
-            signinButton.TabIndex = 4;
+            signinButton.TabIndex = 3;
             signinButton.Text = "Sign In";
             signinButton.UseVisualStyleBackColor = false;
             signinButton.Click += signinButton_Click;
@@ -145,7 +145,7 @@
             emailLabel.Location = new Point(45, 201);
             emailLabel.Name = "emailLabel";
             emailLabel.Size = new Size(90, 15);
-            emailLabel.TabIndex = 3;
+            emailLabel.TabIndex = 8;
             emailLabel.Text = "Email Address : ";
             // 
             // passwordTextBox
@@ -165,7 +165,7 @@
             emailTextBox.Location = new Point(45, 219);
             emailTextBox.Name = "emailTextBox";
             emailTextBox.Size = new Size(421, 29);
-            emailTextBox.TabIndex = 2;
+            emailTextBox.TabIndex = 1;
             // 
             // panel1
             // 
@@ -334,6 +334,7 @@
             Name = "FreelancerSigninForm";
             Text = "FreelancerSigninForm";
             FormClosed += FreelancerSigninForm_FormClosed;
+            KeyDown += FreelancerSigninForm_KeyDown;
             clientSignupPanel.ResumeLayout(false);
             clientSignupPanel.PerformLayout();
             ResumeLayout(false);

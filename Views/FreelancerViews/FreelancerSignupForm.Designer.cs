@@ -90,8 +90,11 @@
             // 
             // dataGridView1
             // 
+            dataGridView1.BackgroundColor = Color.RosyBrown;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Columns.AddRange(new DataGridViewColumn[] { skill_name, skill_level });
+            dataGridView1.GridColor = Color.Salmon;
+            dataGridView1.ForeColor = Color.Tomato;
             dataGridView1.Location = new Point(474, 302);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.Size = new Size(362, 150);

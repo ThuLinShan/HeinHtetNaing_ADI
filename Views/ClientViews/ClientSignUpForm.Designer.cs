@@ -47,6 +47,16 @@
             firstNameTextBox = new TextBox();
             panel1 = new Panel();
             clientSignupLabel = new Label();
+            panel6 = new Panel();
+            panel11 = new Panel();
+            panel5 = new Panel();
+            panel4 = new Panel();
+            panel8 = new Panel();
+            panel7 = new Panel();
+            panel10 = new Panel();
+            panel9 = new Panel();
+            panel3 = new Panel();
+            panel2 = new Panel();
             clientSignupPanel.SuspendLayout();
             SuspendLayout();
             // 
@@ -248,11 +258,101 @@
             clientSignupLabel.TabIndex = 0;
             clientSignupLabel.Text = "Set up client account";
             // 
+            // panel6
+            // 
+            panel6.BackColor = Color.DarkRed;
+            panel6.Location = new Point(1060, 253);
+            panel6.Name = "panel6";
+            panel6.Size = new Size(10, 335);
+            panel6.TabIndex = 2;
+            // 
+            // panel11
+            // 
+            panel11.BackColor = Color.DarkRed;
+            panel11.Location = new Point(898, 191);
+            panel11.Name = "panel11";
+            panel11.Size = new Size(10, 335);
+            panel11.TabIndex = 3;
+            // 
+            // panel5
+            // 
+            panel5.BackColor = Color.DarkRed;
+            panel5.Location = new Point(1134, 191);
+            panel5.Name = "panel5";
+            panel5.Size = new Size(10, 335);
+            panel5.TabIndex = 4;
+            // 
+            // panel4
+            // 
+            panel4.BackColor = Color.DarkRed;
+            panel4.Location = new Point(973, -76);
+            panel4.Name = "panel4";
+            panel4.Size = new Size(10, 125);
+            panel4.TabIndex = 5;
+            // 
+            // panel8
+            // 
+            panel8.BackColor = Color.DarkRed;
+            panel8.Location = new Point(986, 218);
+            panel8.Name = "panel8";
+            panel8.Size = new Size(10, 30);
+            panel8.TabIndex = 6;
+            // 
+            // panel7
+            // 
+            panel7.BackColor = Color.DarkRed;
+            panel7.Location = new Point(265, -65);
+            panel7.Name = "panel7";
+            panel7.Size = new Size(10, 30);
+            panel7.TabIndex = 7;
+            // 
+            // panel10
+            // 
+            panel10.BackColor = Color.DarkRed;
+            panel10.Location = new Point(156, -15);
+            panel10.Name = "panel10";
+            panel10.Size = new Size(10, 132);
+            panel10.TabIndex = 8;
+            // 
+            // panel9
+            // 
+            panel9.BackColor = Color.DarkRed;
+            panel9.Location = new Point(235, -15);
+            panel9.Name = "panel9";
+            panel9.Size = new Size(10, 558);
+            panel9.TabIndex = 9;
+            // 
+            // panel3
+            // 
+            panel3.BackColor = Color.DarkRed;
+            panel3.Location = new Point(95, 178);
+            panel3.Name = "panel3";
+            panel3.Size = new Size(10, 558);
+            panel3.TabIndex = 10;
+            // 
+            // panel2
+            // 
+            panel2.BackColor = Color.DarkRed;
+            panel2.Location = new Point(41, -76);
+            panel2.Name = "panel2";
+            panel2.Size = new Size(10, 242);
+            panel2.TabIndex = 11;
+            // 
             // ClientSignUpForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1184, 661);
+            Controls.Add(panel6);
+            Controls.Add(panel11);
+            Controls.Add(panel5);
+            Controls.Add(panel4);
+            Controls.Add(panel8);
+            Controls.Add(panel7);
+            Controls.Add(panel10);
+            Controls.Add(panel9);
+            Controls.Add(panel3);
+            Controls.Add(panel2);
             Controls.Add(clientSignupPanel);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
@@ -287,5 +387,15 @@
         private TextBox phoneNumberTextBox;
         private TextBox addressTextBox;
         private Button backButton;
+        private Panel panel6;
+        private Panel panel11;
+        private Panel panel5;
+        private Panel panel4;
+        private Panel panel8;
+        private Panel panel7;
+        private Panel panel10;
+        private Panel panel9;
+        private Panel panel3;
+        private Panel panel2;
     }
 }

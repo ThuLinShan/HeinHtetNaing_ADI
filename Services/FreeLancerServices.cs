@@ -100,6 +100,7 @@ namespace HeinHtetNaing_ADI.Services
                 if (reader.Read())
                 {
                     var freelancer = MapReaderToFreelancer(reader);
+                    reader.Close();
                     freelancer.Skills = GetSkillsByFreelancerId(freelancerId, connection);
                     return freelancer;
                 }
@@ -198,15 +199,35 @@ namespace HeinHtetNaing_ADI.Services
             try
             {
                 using var connection = _databaseService.GetConnection();
-                var query = "UPDATE freelancer SET first_name = @FirstName, last_name = @LastName, email = @Email, " +
-                            "password_hash = @PasswordHash, address = @Address, phone_no = @PhoneNo, best_project = @BestProject, " +
-                            "website_link = @WebsiteLink, image = @Image, rating = @Rating WHERE freelancer_id = @FreelancerId";
-                using var command = new SqlCommand(query, connection);
-
-                MapParameters(command, freelancer);
-
                 connection.Open();
-                command.ExecuteNonQuery();
+                var transaction = connection.BeginTransaction(); // Start transaction for atomic operation
+
+                try
+                {
+                    // Step 1: Update freelancer details (same as your current code)
+                    var query = "UPDATE freelancer SET first_name = @FirstName, last_name = @LastName, email = @Email, " +
+                                "password_hash = @PasswordHash, address = @Address, phone_no = @PhoneNo, best_project = @BestProject, " +
+                                "website_link = @WebsiteLink, image = @Image, rating = @Rating WHERE freelancer_id = @FreelancerId";
+                    using var command = new SqlCommand(query, connection, transaction);
+
+                    MapParameters(command, freelancer);
+                    command.ExecuteNonQuery();
+
+                    // Step 2: Get the existing skills from the database for this freelancer
+                    var existingSkills = GetExistingSkills(freelancer.FreelancerId, connection, transaction);
+
+                    // Step 3: Compare existing skills with the new skills and process accordingly
+                    ProcessSkillsBatch(freelancer.Skills, existingSkills, freelancer.FreelancerId, connection, transaction);
+
+                    // Commit the transaction after all operations are successful
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    // Rollback the transaction in case of any error
+                    transaction.Rollback();
+                    throw new Exception($"Error updating freelancer and skills: {ex.Message}", ex);
+                }
             }
             catch (SqlException ex)
             {
@@ -214,6 +235,7 @@ namespace HeinHtetNaing_ADI.Services
                 throw;
             }
         }
+
 
         public void DeleteFreelancer(long freelancerId)
         {
@@ -301,13 +323,118 @@ namespace HeinHtetNaing_ADI.Services
         }
         #endregion
 
+
         #region skill
+
+        private List<Skill> GetExistingSkills(long freelancerId, SqlConnection connection, SqlTransaction transaction)
+        {
+            var query = "SELECT skill_id, skill_name, skill_level FROM skill WHERE freelancer_id = @FreelancerId";
+            using var command = new SqlCommand(query, connection, transaction);
+            command.Parameters.AddWithValue("@FreelancerId", freelancerId);
+
+            using var reader = command.ExecuteReader();
+            var existingSkills = new List<Skill>();
+
+            while (reader.Read())
+            {
+                existingSkills.Add(new Skill
+                {
+                    SkillId = reader.GetInt64(0),
+                    SkillName = reader.GetString(1),
+                    SkillLevel = reader.GetString(2)
+                });
+            }
+
+            return existingSkills;
+        }
+
+        private void ProcessSkillsBatch(List<Skill> newSkills, List<Skill> existingSkills, long freelancerId, SqlConnection connection, SqlTransaction transaction)
+        {
+            // Step 1: Delete removed skills (skills that are in existingSkills but not in newSkills)
+            var removedSkills = existingSkills.Where(existingSkill => !newSkills.Any(newSkill => newSkill.SkillId == existingSkill.SkillId)).ToList();
+            if (removedSkills.Any())
+            {
+                var deleteQuery = "DELETE FROM skill WHERE skill_id IN (";
+                var parameters = new List<string>();
+
+                // Add individual parameters for each skill_id
+                using var deleteCommand = new SqlCommand(deleteQuery, connection, transaction);
+
+                for (int i = 0; i < removedSkills.Count; i++)
+                {
+                    parameters.Add($"@SkillId_{i}");
+                    deleteCommand.Parameters.AddWithValue($"@SkillId_{i}", removedSkills[i].SkillId);
+                }
+
+                // Concatenate the parameters to form the query
+                deleteQuery += string.Join(", ", parameters) + ")";
+
+                deleteCommand.CommandText = deleteQuery;
+                deleteCommand.Parameters.AddWithValue("@FreelancerId", freelancerId);
+
+                // Execute the query
+                deleteCommand.ExecuteNonQuery();
+            }
+
+            // Step 2: Update existing skills (those that have changed)
+            var updatedSkills = newSkills.Where(newSkill => existingSkills.Any(existingSkill => existingSkill.SkillId == newSkill.SkillId &&
+                                                                                                 (existingSkill.SkillLevel != newSkill.SkillLevel ||
+                                                                                                  existingSkill.SkillName != newSkill.SkillName))).ToList();
+            if (updatedSkills.Any())
+            {
+                // Loop through each updated skill and execute an individual UPDATE query
+                foreach (var updatedSkill in updatedSkills)
+                {
+                    var updateQuery = @"
+                                        UPDATE skill
+                                        SET skill_name = @SkillName, skill_level = @SkillLevel
+                                        WHERE freelancer_id = @FreelancerId AND skill_id = @SkillId";
+
+                    using var updateCommand = new SqlCommand(updateQuery, connection, transaction);
+
+                    // Add parameters for the current updated skill
+                    updateCommand.Parameters.AddWithValue("@FreelancerId", freelancerId);
+                    updateCommand.Parameters.AddWithValue("@SkillId", updatedSkill.SkillId);
+                    updateCommand.Parameters.AddWithValue("@SkillName", updatedSkill.SkillName ?? string.Empty);  // Default to empty string if null
+                    updateCommand.Parameters.AddWithValue("@SkillLevel", updatedSkill.SkillLevel ?? string.Empty);  // Default to empty string if null
+
+                    // Execute the update command
+                    updateCommand.ExecuteNonQuery();
+                }
+            }
+
+
+            // Step 3: Add new skills (those that are in newSkills but not in existingSkills)
+            var newSkillsToAdd = newSkills.Where(newSkill => !existingSkills.Any(existingSkill => existingSkill.SkillId == newSkill.SkillId)).ToList();
+            if (newSkillsToAdd.Any())
+            {
+                var insertQuery = @"
+                        INSERT INTO skill (freelancer_id, skill_id, skill_name, skill_level)
+                        VALUES " +
+                        string.Join(", ", newSkillsToAdd.Select(skill => $"(@FreelancerId, @SkillId_{skill.SkillId}, @SkillName_{skill.SkillId}, @SkillLevel_{skill.SkillId})"));
+
+                using var insertCommand = new SqlCommand(insertQuery, connection, transaction);
+                insertCommand.Parameters.AddWithValue("@FreelancerId", freelancerId);
+
+                // Add parameters for each new skill
+                foreach (var newSkill in newSkillsToAdd)
+                {
+                    insertCommand.Parameters.AddWithValue($"@SkillId_{newSkill.SkillId}", newSkill.SkillId);  // Add SkillId parameter
+                    insertCommand.Parameters.AddWithValue($"@SkillName_{newSkill.SkillId}", newSkill.SkillName);
+                    insertCommand.Parameters.AddWithValue($"@SkillLevel_{newSkill.SkillId}", newSkill.SkillLevel);
+                }
+
+                insertCommand.ExecuteNonQuery();
+            }
+
+        }
+
         public void AddSkillToFreelancer(long freelancerId, Skill skill)
         {
             try
             {
                 using var connection = _databaseService.GetConnection();
-                var query = "INSERT INTO skills (freelancer_id, skill_name, skill_level) " +
+                var query = "INSERT INTO skill (freelancer_id, skill_name, skill_level) " +
                             "VALUES (@FreelancerId, @SkillName, @SkillLevel)";
                 using var command = new SqlCommand(query, connection);
 
@@ -330,7 +457,7 @@ namespace HeinHtetNaing_ADI.Services
             try
             {
                 using var connection = _databaseService.GetConnection();
-                var query = "UPDATE skills SET skill_name = @SkillName, skill_level = @SkillLevel " +
+                var query = "UPDATE skill SET skill_name = @SkillName, skill_level = @SkillLevel " +
                             "WHERE skill_id = @SkillId";
                 using var command = new SqlCommand(query, connection);
 

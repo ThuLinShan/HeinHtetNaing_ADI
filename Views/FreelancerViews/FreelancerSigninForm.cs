@@ -79,5 +79,12 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
             this.Hide();
         }
 
+        private void FreelancerSigninForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                this.signinButton_Click(sender, e);
+            }
+        }
     }
 }

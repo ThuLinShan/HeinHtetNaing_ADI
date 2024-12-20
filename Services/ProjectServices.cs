@@ -125,6 +125,62 @@ namespace HeinHtetNaing_ADI.Services
             }
         }
 
+        public IEnumerable<(Project Project, int TotalBids)> BrowseProjects(string keyword, long freelancerId)
+        {
+            try
+            {
+                using var connection = _databaseService.GetConnection();
+
+                // Define the base query
+                var query = @"
+                            SELECT 
+                                p.*, 
+                                (SELECT COUNT(*) 
+                                 FROM bids b 
+                                 WHERE b.project_id = p.project_id) AS TotalBids
+                            FROM project p
+                            WHERE p.status = 'PENDING' 
+                            AND NOT EXISTS (
+                                SELECT 1 
+                                FROM bids b 
+                                WHERE b.freelancer_id = @FreelancerId AND b.project_id = p.project_id
+                            )";
+
+                // Add keyword filter if provided
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    query += " AND (p.title LIKE @Keyword)";
+                }
+
+                using var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@FreelancerId", freelancerId);
+
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    command.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
+                }
+
+                connection.Open();
+                using var reader = command.ExecuteReader();
+
+                var results = new List<(Project Project, int TotalBids)>();
+                while (reader.Read())
+                {
+                    var project = MapReaderToProject(reader);
+                    var totalBids = reader.GetInt32(reader.GetOrdinal("TotalBids"));
+
+                    results.Add((project, totalBids));
+                }
+                return results;
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL Error: {ex.Message}");
+                throw;
+            }
+        }
+
+
         public IEnumerable<Project> GetAllProjectsByClientId(long clientId)
         {
             try
@@ -202,12 +258,25 @@ namespace HeinHtetNaing_ADI.Services
             try
             {
                 using var connection = _databaseService.GetConnection();
-                var query = "DELETE FROM project WHERE project_id = @ProjectId";
-                using var command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@ProjectId", projectId);
+                connection.Open();  // Open the connection before executing any commands
 
-                connection.Open();
-                command.ExecuteNonQuery();
+                // Start a transaction to ensure both deletions are successful or rolled back
+                using var transaction = connection.BeginTransaction();
+
+                // Delete bids associated with the project
+                var deleteBidsQuery = "DELETE FROM bids WHERE project_id = @ProjectId";
+                using var deleteBidsCommand = new SqlCommand(deleteBidsQuery, connection, transaction);
+                deleteBidsCommand.Parameters.AddWithValue("@ProjectId", projectId);
+                deleteBidsCommand.ExecuteNonQuery();
+
+                // Delete the project itself
+                var deleteProjectQuery = "DELETE FROM project WHERE project_id = @ProjectId";
+                using var deleteProjectCommand = new SqlCommand(deleteProjectQuery, connection, transaction);
+                deleteProjectCommand.Parameters.AddWithValue("@ProjectId", projectId);
+                deleteProjectCommand.ExecuteNonQuery();
+
+                // Commit the transaction if both deletions are successful
+                transaction.Commit();
             }
             catch (SqlException ex)
             {
@@ -215,6 +284,7 @@ namespace HeinHtetNaing_ADI.Services
                 throw;
             }
         }
+
 
         private static void MapParameters(SqlCommand command, Project project)
         {
