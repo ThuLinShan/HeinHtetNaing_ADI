@@ -139,7 +139,7 @@ namespace HeinHtetNaing_ADI.Services
                                  FROM bids b 
                                  WHERE b.project_id = p.project_id) AS TotalBids
                             FROM project p
-                            WHERE p.status = 'PENDING' 
+                            WHERE p.status = 'Pending' 
                             AND NOT EXISTS (
                                 SELECT 1 
                                 FROM bids b 

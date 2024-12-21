@@ -184,9 +184,9 @@
             // panel3
             // 
             panel3.BackColor = Color.DarkRed;
-            panel3.Location = new Point(86, 255);
+            panel3.Location = new Point(68, 363);
             panel3.Name = "panel3";
-            panel3.Size = new Size(10, 558);
+            panel3.Size = new Size(27, 229);
             panel3.TabIndex = 1;
             // 
             // panel4
@@ -194,13 +194,13 @@
             panel4.BackColor = Color.DarkRed;
             panel4.Location = new Point(964, 1);
             panel4.Name = "panel4";
-            panel4.Size = new Size(10, 125);
+            panel4.Size = new Size(23, 125);
             panel4.TabIndex = 1;
             // 
             // panel5
             // 
             panel5.BackColor = Color.DarkRed;
-            panel5.Location = new Point(1125, 268);
+            panel5.Location = new Point(1134, 117);
             panel5.Name = "panel5";
             panel5.Size = new Size(10, 335);
             panel5.TabIndex = 1;
@@ -218,13 +218,13 @@
             panel7.BackColor = Color.DarkRed;
             panel7.Location = new Point(256, 12);
             panel7.Name = "panel7";
-            panel7.Size = new Size(10, 30);
+            panel7.Size = new Size(16, 30);
             panel7.TabIndex = 1;
             // 
             // panel8
             // 
             panel8.BackColor = Color.DarkRed;
-            panel8.Location = new Point(977, 295);
+            panel8.Location = new Point(995, 295);
             panel8.Name = "panel8";
             panel8.Size = new Size(10, 30);
             panel8.TabIndex = 1;
@@ -232,7 +232,7 @@
             // panel9
             // 
             panel9.BackColor = Color.DarkRed;
-            panel9.Location = new Point(226, 62);
+            panel9.Location = new Point(219, 128);
             panel9.Name = "panel9";
             panel9.Size = new Size(10, 558);
             panel9.TabIndex = 1;
@@ -242,15 +242,15 @@
             panel10.BackColor = Color.DarkRed;
             panel10.Location = new Point(147, 62);
             panel10.Name = "panel10";
-            panel10.Size = new Size(10, 132);
+            panel10.Size = new Size(10, 44);
             panel10.TabIndex = 1;
             // 
             // panel11
             // 
             panel11.BackColor = Color.DarkRed;
-            panel11.Location = new Point(889, 268);
+            panel11.Location = new Point(883, 388);
             panel11.Name = "panel11";
-            panel11.Size = new Size(10, 335);
+            panel11.Size = new Size(10, 184);
             panel11.TabIndex = 1;
             // 
             // ClientSigninForm

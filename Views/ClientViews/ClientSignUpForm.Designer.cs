@@ -57,6 +57,7 @@
             panel9 = new Panel();
             panel3 = new Panel();
             panel2 = new Panel();
+            panel12 = new Panel();
             clientSignupPanel.SuspendLayout();
             SuspendLayout();
             // 
@@ -261,9 +262,9 @@
             // panel6
             // 
             panel6.BackColor = Color.DarkRed;
-            panel6.Location = new Point(1060, 253);
+            panel6.Location = new Point(1037, 347);
             panel6.Name = "panel6";
-            panel6.Size = new Size(10, 335);
+            panel6.Size = new Size(27, 335);
             panel6.TabIndex = 2;
             // 
             // panel11
@@ -277,9 +278,9 @@
             // panel5
             // 
             panel5.BackColor = Color.DarkRed;
-            panel5.Location = new Point(1134, 191);
+            panel5.Location = new Point(1144, 123);
             panel5.Name = "panel5";
-            panel5.Size = new Size(10, 335);
+            panel5.Size = new Size(10, 239);
             panel5.TabIndex = 4;
             // 
             // panel4
@@ -287,13 +288,13 @@
             panel4.BackColor = Color.DarkRed;
             panel4.Location = new Point(973, -76);
             panel4.Name = "panel4";
-            panel4.Size = new Size(10, 125);
+            panel4.Size = new Size(48, 125);
             panel4.TabIndex = 5;
             // 
             // panel8
             // 
             panel8.BackColor = Color.DarkRed;
-            panel8.Location = new Point(986, 218);
+            panel8.Location = new Point(999, 224);
             panel8.Name = "panel8";
             panel8.Size = new Size(10, 30);
             panel8.TabIndex = 6;
@@ -309,15 +310,15 @@
             // panel10
             // 
             panel10.BackColor = Color.DarkRed;
-            panel10.Location = new Point(156, -15);
+            panel10.Location = new Point(107, 12);
             panel10.Name = "panel10";
-            panel10.Size = new Size(10, 132);
+            panel10.Size = new Size(30, 132);
             panel10.TabIndex = 8;
             // 
             // panel9
             // 
             panel9.BackColor = Color.DarkRed;
-            panel9.Location = new Point(235, -15);
+            panel9.Location = new Point(275, 159);
             panel9.Name = "panel9";
             panel9.Size = new Size(10, 558);
             panel9.TabIndex = 9;
@@ -325,9 +326,9 @@
             // panel3
             // 
             panel3.BackColor = Color.DarkRed;
-            panel3.Location = new Point(95, 178);
+            panel3.Location = new Point(59, 563);
             panel3.Name = "panel3";
-            panel3.Size = new Size(10, 558);
+            panel3.Size = new Size(18, 54);
             panel3.TabIndex = 10;
             // 
             // panel2
@@ -337,6 +338,14 @@
             panel2.Name = "panel2";
             panel2.Size = new Size(10, 242);
             panel2.TabIndex = 11;
+            // 
+            // panel12
+            // 
+            panel12.BackColor = Color.DarkRed;
+            panel12.Location = new Point(163, 338);
+            panel12.Name = "panel12";
+            panel12.Size = new Size(10, 171);
+            panel12.TabIndex = 9;
             // 
             // ClientSignUpForm
             // 
@@ -350,6 +359,7 @@
             Controls.Add(panel8);
             Controls.Add(panel7);
             Controls.Add(panel10);
+            Controls.Add(panel12);
             Controls.Add(panel9);
             Controls.Add(panel3);
             Controls.Add(panel2);
@@ -397,5 +407,6 @@
         private Panel panel9;
         private Panel panel3;
         private Panel panel2;
+        private Panel panel12;
     }
 }

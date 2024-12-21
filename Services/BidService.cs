@@ -17,14 +17,97 @@ namespace HeinHtetNaing_ADI.Services
             try
             {
                 using var connection = _databaseService.GetConnection();
-                var query = "INSERT INTO bids (bid_id, project_id, freelancer_id, rate, rate_type, status, comment, created_at, freelancer_name) " +
-                            "VALUES (@BidId, @ProjectId, @FreelancerId, @Rate, @RateType, @Status, @Comment, @CreatedAt, @FreelancerName)";
-                using var command = new SqlCommand(query, connection);
 
-                MapParameters(command, bid);
+                // Check if the same bid already exists
+                var checkQuery = "SELECT COUNT(*) FROM bids WHERE project_id = @ProjectId AND freelancer_id = @FreelancerId";
+                using var checkCommand = new SqlCommand(checkQuery, connection);
+                checkCommand.Parameters.AddWithValue("@ProjectId", bid.ProjectId);
+                checkCommand.Parameters.AddWithValue("@FreelancerId", bid.FreelancerId);
 
                 connection.Open();
-                command.ExecuteNonQuery();
+                var existingBidCount = (int)checkCommand.ExecuteScalar();
+
+                if (existingBidCount > 0)
+                {
+                    throw new InvalidOperationException("A bid with the same project ID and freelancer ID already exists.");
+                }
+
+                // Insert the new bid
+                var insertQuery = "INSERT INTO bids (bid_id, project_id, freelancer_id, rate, rate_type, status, comment, created_at, freelancer_name) " +
+                                  "VALUES (@BidId, @ProjectId, @FreelancerId, @Rate, @RateType, @Status, @Comment, @CreatedAt, @FreelancerName)";
+                using var insertCommand = new SqlCommand(insertQuery, connection);
+
+                MapParameters(insertCommand, bid);
+
+                insertCommand.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL Error: {ex.Message}");
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Validation Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        public void AcceptBid(Bid bid)
+        {
+            try
+            {
+                using var connection = _databaseService.GetConnection();
+                connection.Open();
+
+                // Begin a transaction to ensure atomicity
+                using var transaction = connection.BeginTransaction();
+
+                try
+                {
+                    // Update the selected bid to "SUCCESS"
+                    var successQuery = @"
+                                        UPDATE bids 
+                                        SET status = 'SUCCESS' 
+                                        WHERE bid_id = @BidId";
+                    using (var successCommand = new SqlCommand(successQuery, connection, transaction))
+                    {
+                        successCommand.Parameters.AddWithValue("@BidId", bid.BidId);
+                        successCommand.ExecuteNonQuery();
+                    }
+
+                    // Update all other bids in the same project to "FAIL"
+                    var failQuery = "UPDATE bids SET status = 'FAIL' WHERE project_id = @ProjectId AND bid_id != @BidId";
+                    using (var failCommand = new SqlCommand(failQuery, connection, transaction))
+                    {
+                        failCommand.Parameters.AddWithValue("@ProjectId", bid.ProjectId);
+                        failCommand.Parameters.AddWithValue("@BidId", bid.BidId);
+                        failCommand.ExecuteNonQuery();
+                    }
+
+                    // Update the project table to set the status to "OnGoing" and add freelancer details
+                    var updateProjectQuery = @"
+                                            UPDATE project
+                                            SET 
+                                                status = 'OnGoing', 
+                                                freelancer_id = @FreelancerId
+                                            WHERE project_id = @ProjectId";
+                    using (var updateProjectCommand = new SqlCommand(updateProjectQuery, connection, transaction))
+                    {
+                        updateProjectCommand.Parameters.AddWithValue("@FreelancerId", bid.FreelancerId);
+                        updateProjectCommand.Parameters.AddWithValue("@ProjectId", bid.ProjectId);
+                        updateProjectCommand.ExecuteNonQuery();
+                    }
+
+                    // Commit the transaction
+                    transaction.Commit();
+                }
+                catch
+                {
+                    // Rollback transaction if anything goes wrong
+                    transaction.Rollback();
+                    throw;
+                }
             }
             catch (SqlException ex)
             {
@@ -32,6 +115,7 @@ namespace HeinHtetNaing_ADI.Services
                 throw;
             }
         }
+
 
         public Bid? GetBidById(long bidId)
         {

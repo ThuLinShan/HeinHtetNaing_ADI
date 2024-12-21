@@ -104,6 +104,13 @@ namespace HeinHtetNaing_ADI.Models
             Version = 1;
         }
 
+        public void Accepted()
+        {
+            this.Status = "ACCEPTED";
+            this.UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            Version += 1;
+        }
+
         // Helper to convert SkillTags to a comma-separated string for database storage
         public string SkillTagsToString()
         {

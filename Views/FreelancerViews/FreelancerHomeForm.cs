@@ -77,7 +77,7 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
                         // Add the skill to the list
                         skills.Add(new Skill
                         {
-                            SkillId = Convert.ToInt64(skillId), // Convert skillId to long
+                            SkillId = Convert.ToInt64(skillId),
                             SkillName = skillName,
                             SkillLevel = skillLevel
                         });
@@ -151,8 +151,8 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
                 {
                     Text = project.Title,
                     Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold),
-                    ForeColor = Color.Tomato,
-                    BackColor = Color.Snow,
+                    ForeColor = Color.DarkRed,
+                    BackColor = Color.White,
                     AutoSize = true,
                     Location = new Point(3, 2),
                     Padding = new Padding(3)
@@ -187,7 +187,7 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
                     Text = $"{project.Budget} GPD",
                     Font = new Font("Segoe UI", 11.25F),
                     ForeColor = Color.White,
-                    Location = new Point(640, 4), // Moved 30 pixels up
+                    Location = new Point(640, 28), // Moved 20 pixels down
                     AutoSize = true
                 };
 
@@ -196,18 +196,17 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
                 {
                     Text = $"Total Bids: {totalBids}",
                     Font = new Font("Segoe UI", 11.25F),
-                    ForeColor = Color.White,
-                    Location = new Point(640, 95), // Moved 30 pixels up
+                    ForeColor = Color.DarkRed,
+                    Location = new Point(554, 5), // Moved 20 pixels down
                     AutoSize = true
                 };
-
 
                 var label2 = new Label
                 {
                     Text = "Budget: ",
                     Font = new Font("Segoe UI", 11.25F),
                     ForeColor = Color.White,
-                    Location = new Point(554, 4), // Moved 30 pixels up
+                    Location = new Point(554, 28), // Moved 20 pixels down
                     AutoSize = true
                 };
 
@@ -217,7 +216,7 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
                     Text = project.Deadline.ToString("yyyy/MM/dd"),
                     Font = new Font("Segoe UI", 11.25F),
                     ForeColor = Color.White,
-                    Location = new Point(640, 35), // Moved 30 pixels up
+                    Location = new Point(640, 55), // Moved 20 pixels down
                     AutoSize = true
                 };
 
@@ -226,7 +225,7 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
                     Text = "Deadline: ",
                     Font = new Font("Segoe UI", 11.25F),
                     ForeColor = Color.White,
-                    Location = new Point(554, 35), // Moved 30 pixels up
+                    Location = new Point(554, 55), // Moved 20 pixels down
                     AutoSize = true
                 };
 
@@ -234,11 +233,11 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
                 var projectRequiredSkillsTextBox = new TextBox
                 {
                     Text = string.Join(", ", project.SkillTags),
-                    BackColor = Color.Salmon,
+                    BackColor = Color.DarkRed,
                     BorderStyle = BorderStyle.None,
-                    Font = new Font("Segoe UI", 14.25F),
-                    ForeColor = Color.White,
-                    Location = new Point(551, 87), // Moved 30 pixels up
+                    Font = new Font("Segoe UI", 11),
+                    ForeColor = Color.Aqua,
+                    Location = new Point(551, 107), // Moved 20 pixels down
                     ReadOnly = true,
                     Size = new Size(214, 26)
                 };
@@ -247,8 +246,8 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
                 {
                     Text = "Required Skill(s): ",
                     Font = new Font("Segoe UI", 11.25F),
-                    ForeColor = Color.White,
-                    Location = new Point(554, 64), // Moved 30 pixels up
+                    ForeColor = Color.Yellow,
+                    Location = new Point(554, 84), // Moved 20 pixels down
                     AutoSize = true
                 };
 
@@ -259,15 +258,21 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
                     Font = new Font("Segoe UI", 12F),
                     ForeColor = Color.Tomato,
                     BackColor = Color.White,
-                    Location = new Point(550, 119), // Moved 30 pixels up
+                    Location = new Point(550, 139), // Moved 20 pixels down
                     Size = new Size(215, 35)
                 };
 
 
+
                 bidButton.Click += (s, e) =>
                 {
-                    // Handle bid button click here
-                    MessageBox.Show($"You clicked Bid for project: {project.Title}");
+                    Form freelancerBidForm = new FreelancerBidForm(project, _freelancer);
+                    freelancerBidForm.FormClosed += (s, args) =>
+                    {
+                        // Reload the form or refresh the contents here
+                        this.FreelancerHomeForm_Load(s, e);
+                    };
+                    freelancerBidForm.ShowDialog();
                 };
 
                 // Add controls to the panel

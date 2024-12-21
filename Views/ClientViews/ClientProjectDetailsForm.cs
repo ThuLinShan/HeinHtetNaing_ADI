@@ -19,8 +19,7 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
             _clientService = new ClientService();
             _bidService = new BidService();
             _projectService = new ProjectService();
-            _project = _projectService.GetProjectById(projectId);
-            _client = _clientService.GetClientById((long)_project.ClientId);
+            _projectId = projectId;
             _bidList = _bidService.GetAllBidsByProjectId(projectId).ToList();
             this.StartPosition = FormStartPosition.CenterScreen;
             InitializeComponent();
@@ -29,6 +28,8 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
 
         private void ClientProjectDetailsForm_Load(object sender, EventArgs e)
         {
+            _project = _projectService.GetProjectById(_projectId);
+            _client = _clientService.GetClientById((long)_project.ClientId);
             clientNameLabel.Text = _client.FirstName + " " + _client.LastName;
             long epochTime = (long)_project.CreatedAt; // Assuming this is in seconds
             DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(epochTime).LocalDateTime; // Convert to local time
@@ -39,9 +40,15 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
             projectTitleLabel.Text = _project.Title;
             totalBidLabel.Text = "Total bids : " + _bidList.Count.ToString();
 
-            if (_project.FreelancerId != null)
+            if (_project.Status != "Pending")
             {
                 reviewPanel.Enabled = true;
+                bidsContainerPanel.Enabled = false;
+            }
+            else
+            {
+                reviewPanel.Enabled = false;
+                bidsContainerPanel.Enabled = true;
             }
 
             PopulateBidsContainerPanel();
@@ -149,6 +156,10 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
                 // Inline Click Event Handler with captured `currentBid`
                 acceptBidButton.Click += (sender, e) =>
                 {
+                    _bidService.AcceptBid(currentBid);
+                    _project.Accepted();
+                    _projectService.UpdateProject(_project);
+                    this.ClientProjectDetailsForm_Load(sender, e);
                     MessageBox.Show($"You accepted the bid from {currentBid.FreelancerName} with rate {currentBid.Rate}/hr");
                 };
                 bidPanel.Controls.Add(acceptBidButton);
