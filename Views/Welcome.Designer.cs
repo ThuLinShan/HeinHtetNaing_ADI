@@ -41,7 +41,6 @@
             panel4 = new Panel();
             clientLabelLink = new LinkLabel();
             label2 = new Label();
-            guidLinkedLabel = new LinkLabel();
             panel8 = new Panel();
             label1 = new Label();
             panel7 = new Panel();
@@ -154,7 +153,6 @@
             // 
             panel2.BackColor = Color.White;
             panel2.Controls.Add(panel4);
-            panel2.Controls.Add(guidLinkedLabel);
             panel2.Controls.Add(panel8);
             panel2.Controls.Add(label1);
             panel2.Controls.Add(panel7);
@@ -197,16 +195,6 @@
             label2.TabIndex = 1;
             label2.Text = "I am a ";
             label2.Click += iamLabel1_Click;
-            // 
-            // guidLinkedLabel
-            // 
-            guidLinkedLabel.AutoSize = true;
-            guidLinkedLabel.Location = new Point(512, 637);
-            guidLinkedLabel.Name = "guidLinkedLabel";
-            guidLinkedLabel.Size = new Size(68, 15);
-            guidLinkedLabel.TabIndex = 3;
-            guidLinkedLabel.TabStop = true;
-            guidLinkedLabel.Text = "Need Help?";
             // 
             // panel8
             // 
@@ -271,7 +259,6 @@
         private Label label2;
         private LinkLabel freeLancerLabelLink;
         private Label label3;
-        private LinkLabel guidLinkedLabel;
         private LinkLabel clientLabelLink;
         private Panel panel3;
         private Panel panel4;
