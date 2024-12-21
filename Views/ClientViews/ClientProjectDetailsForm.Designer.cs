@@ -29,15 +29,26 @@
         private void InitializeComponent()
         {
             panel1 = new Panel();
-            projectStatusLabel = new Label();
+            totalBidLabel = new Label();
+            label9 = new Label();
             projectTitleLabel = new Label();
+            statusPendingLabel = new Label();
             panel2 = new Panel();
+            statusPanel = new Panel();
+            panel4 = new Panel();
+            statusCompletedLabel = new Label();
+            statusOngoingLabel = new Label();
+            label17 = new Label();
+            label14 = new Label();
+            projectEndDateLabel = new Label();
+            projectStartDateLabel = new Label();
             reviewPanel = new Panel();
             saveProjectReviewButton = new Button();
             projectReviewTextBox = new TextBox();
             projectRatingNumericUpDown = new NumericUpDown();
             label7 = new Label();
             label8 = new Label();
+            label13 = new Label();
             label6 = new Label();
             panel3 = new Panel();
             projectDescriptionTextBox = new TextBox();
@@ -59,10 +70,10 @@
             bidRateLabel = new Label();
             label12 = new Label();
             label10 = new Label();
-            label9 = new Label();
-            totalBidLabel = new Label();
             panel1.SuspendLayout();
             panel2.SuspendLayout();
+            statusPanel.SuspendLayout();
+            panel4.SuspendLayout();
             reviewPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)projectRatingNumericUpDown).BeginInit();
             panel3.SuspendLayout();
@@ -73,25 +84,38 @@
             // panel1
             // 
             panel1.BackColor = Color.DarkRed;
-            panel1.Controls.Add(projectStatusLabel);
+            panel1.Controls.Add(totalBidLabel);
+            panel1.Controls.Add(label9);
             panel1.Controls.Add(projectTitleLabel);
             panel1.ForeColor = Color.White;
             panel1.Location = new Point(2, -1);
             panel1.Name = "panel1";
-            panel1.Size = new Size(826, 78);
+            panel1.Size = new Size(1182, 78);
             panel1.TabIndex = 0;
             // 
-            // projectStatusLabel
+            // totalBidLabel
             // 
-            projectStatusLabel.AutoSize = true;
-            projectStatusLabel.BackColor = Color.Tomato;
-            projectStatusLabel.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            projectStatusLabel.Location = new Point(707, 27);
-            projectStatusLabel.Name = "projectStatusLabel";
-            projectStatusLabel.Padding = new Padding(3);
-            projectStatusLabel.Size = new Size(87, 31);
-            projectStatusLabel.TabIndex = 2;
-            projectStatusLabel.Text = "Pending";
+            totalBidLabel.AutoSize = true;
+            totalBidLabel.BackColor = Color.Transparent;
+            totalBidLabel.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            totalBidLabel.ForeColor = Color.White;
+            totalBidLabel.Location = new Point(1037, 48);
+            totalBidLabel.Name = "totalBidLabel";
+            totalBidLabel.Size = new Size(101, 18);
+            totalBidLabel.TabIndex = 0;
+            totalBidLabel.Text = "total : 30 bids";
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.BackColor = Color.Transparent;
+            label9.Font = new Font("Arial", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label9.ForeColor = Color.White;
+            label9.Location = new Point(845, 39);
+            label9.Name = "label9";
+            label9.Size = new Size(59, 27);
+            label9.TabIndex = 0;
+            label9.Text = "Bids";
             // 
             // projectTitleLabel
             // 
@@ -103,9 +127,23 @@
             projectTitleLabel.TabIndex = 1;
             projectTitleLabel.Text = "Title";
             // 
+            // statusPendingLabel
+            // 
+            statusPendingLabel.AutoSize = true;
+            statusPendingLabel.BackColor = Color.Transparent;
+            statusPendingLabel.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            statusPendingLabel.ForeColor = Color.Gray;
+            statusPendingLabel.Location = new Point(31, 14);
+            statusPendingLabel.Name = "statusPendingLabel";
+            statusPendingLabel.Padding = new Padding(3);
+            statusPendingLabel.Size = new Size(87, 31);
+            statusPendingLabel.TabIndex = 2;
+            statusPendingLabel.Text = "Pending";
+            // 
             // panel2
             // 
             panel2.BackColor = Color.White;
+            panel2.Controls.Add(statusPanel);
             panel2.Controls.Add(reviewPanel);
             panel2.Controls.Add(panel3);
             panel2.Location = new Point(2, 84);
@@ -113,18 +151,112 @@
             panel2.Size = new Size(826, 576);
             panel2.TabIndex = 1;
             // 
+            // statusPanel
+            // 
+            statusPanel.BorderStyle = BorderStyle.FixedSingle;
+            statusPanel.Controls.Add(panel4);
+            statusPanel.Controls.Add(label17);
+            statusPanel.Controls.Add(label14);
+            statusPanel.Controls.Add(projectEndDateLabel);
+            statusPanel.Controls.Add(projectStartDateLabel);
+            statusPanel.Location = new Point(385, 13);
+            statusPanel.Name = "statusPanel";
+            statusPanel.Size = new Size(430, 196);
+            statusPanel.TabIndex = 3;
+            // 
+            // panel4
+            // 
+            panel4.BackColor = Color.Silver;
+            panel4.Controls.Add(statusCompletedLabel);
+            panel4.Controls.Add(statusPendingLabel);
+            panel4.Controls.Add(statusOngoingLabel);
+            panel4.Location = new Point(25, 23);
+            panel4.Name = "panel4";
+            panel4.Size = new Size(385, 59);
+            panel4.TabIndex = 3;
+            // 
+            // statusCompletedLabel
+            // 
+            statusCompletedLabel.AutoSize = true;
+            statusCompletedLabel.BackColor = Color.Transparent;
+            statusCompletedLabel.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            statusCompletedLabel.ForeColor = Color.DimGray;
+            statusCompletedLabel.Location = new Point(237, 14);
+            statusCompletedLabel.Name = "statusCompletedLabel";
+            statusCompletedLabel.Padding = new Padding(3);
+            statusCompletedLabel.Size = new Size(110, 31);
+            statusCompletedLabel.TabIndex = 2;
+            statusCompletedLabel.Text = "Completed";
+            // 
+            // statusOngoingLabel
+            // 
+            statusOngoingLabel.AutoSize = true;
+            statusOngoingLabel.BackColor = Color.Transparent;
+            statusOngoingLabel.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            statusOngoingLabel.ForeColor = Color.DimGray;
+            statusOngoingLabel.Location = new Point(139, 13);
+            statusOngoingLabel.Name = "statusOngoingLabel";
+            statusOngoingLabel.Padding = new Padding(3);
+            statusOngoingLabel.Size = new Size(92, 31);
+            statusOngoingLabel.TabIndex = 2;
+            statusOngoingLabel.Text = "Ongoing";
+            // 
+            // label17
+            // 
+            label17.AutoSize = true;
+            label17.Font = new Font("Segoe UI Symbol", 11.25F);
+            label17.Location = new Point(25, 137);
+            label17.Name = "label17";
+            label17.Size = new Size(85, 20);
+            label17.TabIndex = 0;
+            label17.Text = "Ended At  : ";
+            // 
+            // label14
+            // 
+            label14.AutoSize = true;
+            label14.Font = new Font("Segoe UI Symbol", 11.25F);
+            label14.Location = new Point(25, 106);
+            label14.Name = "label14";
+            label14.Size = new Size(91, 20);
+            label14.TabIndex = 0;
+            label14.Text = "Started At  : ";
+            // 
+            // projectEndDateLabel
+            // 
+            projectEndDateLabel.AutoSize = true;
+            projectEndDateLabel.Font = new Font("Segoe UI Symbol", 11.25F);
+            projectEndDateLabel.ForeColor = Color.DarkRed;
+            projectEndDateLabel.Location = new Point(147, 137);
+            projectEndDateLabel.Name = "projectEndDateLabel";
+            projectEndDateLabel.Size = new Size(85, 20);
+            projectEndDateLabel.TabIndex = 0;
+            projectEndDateLabel.Text = "2024/12/18";
+            // 
+            // projectStartDateLabel
+            // 
+            projectStartDateLabel.AutoSize = true;
+            projectStartDateLabel.Font = new Font("Segoe UI Symbol", 11.25F);
+            projectStartDateLabel.ForeColor = Color.DarkRed;
+            projectStartDateLabel.Location = new Point(147, 106);
+            projectStartDateLabel.Name = "projectStartDateLabel";
+            projectStartDateLabel.Size = new Size(85, 20);
+            projectStartDateLabel.TabIndex = 0;
+            projectStartDateLabel.Text = "2024/12/18";
+            // 
             // reviewPanel
             // 
+            reviewPanel.BorderStyle = BorderStyle.FixedSingle;
             reviewPanel.Controls.Add(saveProjectReviewButton);
             reviewPanel.Controls.Add(projectReviewTextBox);
             reviewPanel.Controls.Add(projectRatingNumericUpDown);
             reviewPanel.Controls.Add(label7);
             reviewPanel.Controls.Add(label8);
+            reviewPanel.Controls.Add(label13);
             reviewPanel.Controls.Add(label6);
             reviewPanel.Enabled = false;
-            reviewPanel.Location = new Point(385, 13);
+            reviewPanel.Location = new Point(385, 215);
             reviewPanel.Name = "reviewPanel";
-            reviewPanel.Size = new Size(430, 536);
+            reviewPanel.Size = new Size(430, 334);
             reviewPanel.TabIndex = 2;
             // 
             // saveProjectReviewButton
@@ -132,65 +264,77 @@
             saveProjectReviewButton.BackColor = Color.DarkRed;
             saveProjectReviewButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             saveProjectReviewButton.ForeColor = Color.White;
-            saveProjectReviewButton.Location = new Point(15, 464);
+            saveProjectReviewButton.Location = new Point(24, 265);
             saveProjectReviewButton.Name = "saveProjectReviewButton";
             saveProjectReviewButton.Size = new Size(385, 49);
             saveProjectReviewButton.TabIndex = 8;
             saveProjectReviewButton.Text = "Save Review";
             saveProjectReviewButton.UseVisualStyleBackColor = false;
+            saveProjectReviewButton.Click += saveProjectReviewButton_Click;
             // 
             // projectReviewTextBox
             // 
             projectReviewTextBox.BackColor = Color.White;
             projectReviewTextBox.ForeColor = Color.DarkRed;
-            projectReviewTextBox.Location = new Point(15, 162);
+            projectReviewTextBox.Location = new Point(24, 129);
             projectReviewTextBox.Multiline = true;
             projectReviewTextBox.Name = "projectReviewTextBox";
-            projectReviewTextBox.Size = new Size(385, 296);
+            projectReviewTextBox.Size = new Size(385, 130);
             projectReviewTextBox.TabIndex = 4;
             // 
             // projectRatingNumericUpDown
             // 
             projectRatingNumericUpDown.BorderStyle = BorderStyle.None;
-            projectRatingNumericUpDown.Font = new Font("Segoe UI", 18F, FontStyle.Underline, GraphicsUnit.Point, 0);
+            projectRatingNumericUpDown.Font = new Font("Segoe UI", 12F, FontStyle.Underline, GraphicsUnit.Point, 0);
             projectRatingNumericUpDown.ForeColor = Color.DarkRed;
-            projectRatingNumericUpDown.Location = new Point(111, 71);
-            projectRatingNumericUpDown.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
+            projectRatingNumericUpDown.Location = new Point(123, 77);
+            projectRatingNumericUpDown.Maximum = new decimal(new int[] { 5, 0, 0, 0 });
             projectRatingNumericUpDown.Name = "projectRatingNumericUpDown";
-            projectRatingNumericUpDown.Size = new Size(69, 35);
+            projectRatingNumericUpDown.Size = new Size(43, 25);
             projectRatingNumericUpDown.TabIndex = 7;
             projectRatingNumericUpDown.TextAlign = HorizontalAlignment.Center;
             // 
             // label7
             // 
             label7.AutoSize = true;
-            label7.Font = new Font("Segoe UI", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label7.Font = new Font("Segoe UI", 14.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label7.ForeColor = Color.DarkRed;
-            label7.Location = new Point(233, 13);
+            label7.Location = new Point(279, 17);
             label7.Name = "label7";
-            label7.Size = new Size(167, 32);
+            label7.Size = new Size(130, 25);
             label7.TabIndex = 5;
             label7.Text = "Client Review";
             // 
             // label8
             // 
             label8.AutoSize = true;
-            label8.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label8.Font = new Font("Segoe UI", 12F);
             label8.ForeColor = Color.DarkRed;
-            label8.Location = new Point(15, 117);
+            label8.Location = new Point(24, 105);
             label8.Name = "label8";
-            label8.Size = new Size(121, 30);
+            label8.Size = new Size(90, 21);
             label8.TabIndex = 6;
             label8.Text = "Comment : ";
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Font = new Font("Segoe UI", 12F);
+            label13.ForeColor = Color.DarkRed;
+            label13.Location = new Point(172, 76);
+            label13.Name = "label13";
+            label13.Size = new Size(74, 21);
+            label13.TabIndex = 6;
+            label13.Text = "(out of 5)";
             // 
             // label6
             // 
             label6.AutoSize = true;
-            label6.Font = new Font("Segoe UI", 15.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label6.Font = new Font("Segoe UI", 12F);
             label6.ForeColor = Color.DarkRed;
-            label6.Location = new Point(15, 72);
+            label6.Location = new Point(25, 77);
             label6.Name = "label6";
-            label6.Size = new Size(90, 30);
+            label6.Size = new Size(66, 21);
             label6.TabIndex = 6;
             label6.Text = "Rating : ";
             // 
@@ -423,38 +567,12 @@
             label10.TabIndex = 0;
             label10.Text = "Bid by : ";
             // 
-            // label9
-            // 
-            label9.AutoSize = true;
-            label9.BackColor = Color.Transparent;
-            label9.Font = new Font("Arial", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label9.ForeColor = Color.White;
-            label9.Location = new Point(872, 40);
-            label9.Name = "label9";
-            label9.Size = new Size(59, 27);
-            label9.TabIndex = 0;
-            label9.Text = "Bids";
-            // 
-            // totalBidLabel
-            // 
-            totalBidLabel.AutoSize = true;
-            totalBidLabel.BackColor = Color.Transparent;
-            totalBidLabel.Font = new Font("Arial", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            totalBidLabel.ForeColor = Color.White;
-            totalBidLabel.Location = new Point(1064, 49);
-            totalBidLabel.Name = "totalBidLabel";
-            totalBidLabel.Size = new Size(101, 18);
-            totalBidLabel.TabIndex = 0;
-            totalBidLabel.Text = "total : 30 bids";
-            // 
             // ClientProjectDetailsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Maroon;
             ClientSize = new Size(1184, 661);
-            Controls.Add(totalBidLabel);
-            Controls.Add(label9);
             Controls.Add(bidsContainerPanel);
             Controls.Add(panel2);
             Controls.Add(panel1);
@@ -466,6 +584,10 @@
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             panel2.ResumeLayout(false);
+            statusPanel.ResumeLayout(false);
+            statusPanel.PerformLayout();
+            panel4.ResumeLayout(false);
+            panel4.PerformLayout();
             reviewPanel.ResumeLayout(false);
             reviewPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)projectRatingNumericUpDown).EndInit();
@@ -475,14 +597,13 @@
             bidPanel.ResumeLayout(false);
             bidPanel.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
         private Panel panel1;
         private Label projectTitleLabel;
-        private Label projectStatusLabel;
+        private Label statusPendingLabel;
         private Panel panel2;
         private Label label1;
         private Panel panel3;
@@ -513,5 +634,14 @@
         private Label totalBidLabel;
         private Button acceptBidButton;
         private Button freelancerDetailsButton;
+        private Label label13;
+        private Panel statusPanel;
+        private Label statusOngoingLabel;
+        private Label statusCompletedLabel;
+        private Panel panel4;
+        private Label label17;
+        private Label label14;
+        private Label projectEndDateLabel;
+        private Label projectStartDateLabel;
     }
 }

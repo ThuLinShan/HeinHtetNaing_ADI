@@ -314,5 +314,15 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
 
         }
 
+        private void dashboardLinkedLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Form dashboardForm = new FreelancerDashboardForm(_freelancer);
+            dashboardForm.FormClosed += (s, args) =>
+            {
+                // Reload the form or refresh the contents here
+                this.FreelancerHomeForm_Load(s, e);
+            };
+            dashboardForm.ShowDialog();
+        }
     }
 }

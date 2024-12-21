@@ -43,6 +43,7 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
 
             rateTypeComboBox.DisplayMember = "Key";
             rateTypeComboBox.ValueMember = "Value";
+            rateTypeComboBox.ForeColor = Color.DarkRed;
             rateTypeComboBox.DataSource = rateTypeItems;
             rateTypeComboBox.SelectedIndex = 0; // Default selection
         }

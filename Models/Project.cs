@@ -104,10 +104,20 @@ namespace HeinHtetNaing_ADI.Models
             Version = 1;
         }
 
-        public void Accepted()
+        public void Accepted(long freelancerId)
         {
-            this.Status = "ACCEPTED";
+            this.Status = "Ongoing";
             this.UpdatedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            this.StartDate = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            this.FreelancerId = freelancerId;
+            Version += 1;
+        }
+
+        public void Finished()
+        {
+            this.Status = "Completed";
+            this.Completed = true;
+            this.EndDate = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             Version += 1;
         }
 

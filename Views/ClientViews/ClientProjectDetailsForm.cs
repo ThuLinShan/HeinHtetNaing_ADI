@@ -8,6 +8,7 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
         private long _projectId;
         private Project _project;
         private Client _client;
+        private FreelancerService _freelancerService;
         private ProjectService _projectService;
         private ClientService _clientService;
         private BidService _bidService;
@@ -17,6 +18,7 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
         {
             _projectId = projectId;
             _clientService = new ClientService();
+            _freelancerService = new FreelancerService();
             _bidService = new BidService();
             _projectService = new ProjectService();
             _projectId = projectId;
@@ -28,30 +30,66 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
 
         private void ClientProjectDetailsForm_Load(object sender, EventArgs e)
         {
+            // Load project and client details
             _project = _projectService.GetProjectById(_projectId);
             _client = _clientService.GetClientById((long)_project.ClientId);
-            clientNameLabel.Text = _client.FirstName + " " + _client.LastName;
+            clientNameLabel.Text = $"{_client.FirstName} {_client.LastName}";
+
+            // Convert epoch time to DateTime
             long epochTime = (long)_project.CreatedAt; // Assuming this is in seconds
-            DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(epochTime).LocalDateTime; // Convert to local time
-            projectPostedAtLabel.Text = dateTime.ToString("yyyy-MM-dd"); // Format the DateTime
+            DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(epochTime).LocalDateTime;
+            projectPostedAtLabel.Text = dateTime.ToString("yyyy-MM-dd");
+
+            // Update UI with project details
             projectFreeLancerNameLabel.Text = _project.FreelancerId != null ? "Username" : "None";
             deadLineLabel.Text = _project.Deadline.ToString("yyyy-MM-dd");
             projectDescriptionTextBox.Text = _project.Description;
             projectTitleLabel.Text = _project.Title;
-            totalBidLabel.Text = "Total bids : " + _bidList.Count.ToString();
 
-            if (_project.Status != "Pending")
+            projectStartDateLabel.Text =
+                _project?.StartDate != null && long.TryParse(_project.StartDate.ToString(), out var startDateEpoch) &&
+                startDateEpoch >= 0
+                    ? DateTimeOffset.FromUnixTimeSeconds(startDateEpoch).LocalDateTime.ToString("yyyy-MM-dd")
+                    : "NA";
+
+            projectEndDateLabel.Text =
+                _project?.EndDate != null && long.TryParse(_project.EndDate.ToString(), out var endDateEpoch) &&
+                endDateEpoch >= 0
+                    ? DateTimeOffset.FromUnixTimeSeconds(endDateEpoch).LocalDateTime.ToString("yyyy-MM-dd")
+                    : "NA";
+
+
+            // Load total bids
+            totalBidLabel.Text = $"Total bids: {_bidList.Count}";
+
+            // Update status labels and related panels
+            UpdateStatusLabel(statusPendingLabel, _project.Status == "Pending", Color.DarkRed, Color.Transparent, _project.Status == "Pending", bidsContainerPanel);
+            UpdateStatusLabel(statusOngoingLabel, _project.Status == "Ongoing", Color.DarkRed, Color.Transparent);
+            UpdateStatusLabel(statusCompletedLabel, _project.Status == "Completed", Color.DarkRed, Color.Transparent, _project.Status == "Completed", reviewPanel);
+
+            if (_project.Status == "Completed")
             {
-                reviewPanel.Enabled = true;
-                bidsContainerPanel.Enabled = false;
-            }
-            else
-            {
-                reviewPanel.Enabled = false;
-                bidsContainerPanel.Enabled = true;
+                projectRatingNumericUpDown.Value = _project.Rating.HasValue ? (decimal)_project.Rating : 0; // Default to 0 if Rating is null
+                projectReviewTextBox.Text = !string.IsNullOrWhiteSpace(_project.ClientReview) ?
+                    _project.ClientReview :
+                    string.Empty; // Default to empty string if ClientReview is null or whitespace
             }
 
+            // Populate bids container panel
             PopulateBidsContainerPanel();
+        }
+
+        private void saveProjectReviewButton_Click(object sender, EventArgs e)
+        {
+            decimal rating = projectRatingNumericUpDown.Value > 0 ? projectRatingNumericUpDown.Value : 0; // Default to 0 if no value is set
+            string comment = !string.IsNullOrWhiteSpace(projectReviewTextBox.Text) ? projectReviewTextBox.Text : string.Empty; // Default to empty string if null or whitespace
+
+            _project.Rating = rating;
+            _project.ClientReview = comment;
+
+            _projectService.UpdateProject(_project);
+            MessageBox.Show("Project review is saved");
+            ClientProjectDetailsForm_Load(sender, e);
         }
 
         private void projectRatingNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -137,7 +175,14 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
                 };
                 freelancerDetailsButton.Click += (sender, e) =>
                 {
-                    MessageBox.Show($"Freelancer Name: {currentBid.FreelancerName}\nDetails about the freelancer can be shown here.");
+                    Freelancer freelancer = _freelancerService.GetFreelancerById((long)currentBid.FreelancerId);
+                    Form freelancerDetailsForm = new ClientFreelancerDetailsForm(freelancer);
+                    freelancerDetailsForm.FormClosed += (s, args) =>
+                    {
+                        // Reload the form or refresh the contents here
+                        this.ClientProjectDetailsForm_Load(sender, e);
+                    };
+                    freelancerDetailsForm.ShowDialog();
                 };
                 bidPanel.Controls.Add(freelancerDetailsButton);
 
@@ -157,7 +202,7 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
                 acceptBidButton.Click += (sender, e) =>
                 {
                     _bidService.AcceptBid(currentBid);
-                    _project.Accepted();
+                    _project.Accepted((long)currentBid.FreelancerId);
                     _projectService.UpdateProject(_project);
                     this.ClientProjectDetailsForm_Load(sender, e);
                     MessageBox.Show($"You accepted the bid from {currentBid.FreelancerName} with rate {currentBid.Rate}/hr");
@@ -165,6 +210,20 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
                 bidPanel.Controls.Add(acceptBidButton);
 
                 bidsContainerPanel.Controls.Add(bidPanel);
+            }
+        }
+        private void UpdateStatusLabel(Label label, bool isActive, Color activeBackColor, Color inactiveBackColor, bool enablePanel = false, Panel panel = null)
+        {
+            label.ForeColor = isActive ? Color.White : Color.Gray;
+            label.BackColor = isActive ? activeBackColor : inactiveBackColor;
+
+            // Add 3D border for active labels
+            label.BorderStyle = isActive ? BorderStyle.Fixed3D : BorderStyle.None;
+            label.FlatStyle = isActive ? FlatStyle.Popup : FlatStyle.Standard;
+
+            if (panel != null)
+            {
+                panel.Enabled = enablePanel;
             }
         }
 

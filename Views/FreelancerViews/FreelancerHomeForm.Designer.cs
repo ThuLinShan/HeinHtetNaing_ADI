@@ -108,6 +108,7 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
             dashboardLinkedLabel.TabIndex = 0;
             dashboardLinkedLabel.TabStop = true;
             dashboardLinkedLabel.Text = "Dashboard 📊";
+            dashboardLinkedLabel.LinkClicked += dashboardLinkedLabel_LinkClicked;
             // 
             // searchButton
             // 

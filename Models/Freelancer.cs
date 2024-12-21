@@ -35,6 +35,10 @@ namespace HeinHtetNaing_ADI.Models
         [SqlColumnName("best_project")]
         public long? BestProject { get; set; }
 
+        [SqlColumnName("skill_tags")]
+        [SqlType("VARCHAR(255)")]
+        public string? Expertise { get; set; }
+
         [SqlColumnName("website_link")]
         [SqlType("VARCHAR(2083)")]
         public string? WebsiteLink { get; set; }
@@ -53,8 +57,15 @@ namespace HeinHtetNaing_ADI.Models
             FreelancerId = GuidUtil.GenerateNewLongGuid();
         }
 
-        public Freelancer(string firstName, string lastName, string email, string password, string? address = null, string? phoneNo = null,
-                          long? bestProject = null, string? websiteLink = null, string? image = null, decimal? rating = null)
+        public Freelancer(
+            string firstName,
+            string lastName,
+            string email,
+            string password,
+            string expertise,
+            string address,
+            string phoneNo,
+            string websiteLink)
         {
             FreelancerId = GuidUtil.GenerateNewLongGuid();
             FirstName = firstName;
@@ -62,10 +73,11 @@ namespace HeinHtetNaing_ADI.Models
             Email = email;
             Address = address;
             PhoneNo = phoneNo;
-            BestProject = bestProject;
+            BestProject = 0;
             WebsiteLink = websiteLink;
-            Image = image;
-            Rating = rating;
+            Expertise = expertise;
+            Image = "";
+            Rating = 0;
             PasswordHash = PasswordUtil.HashPassword(password);
         }
 

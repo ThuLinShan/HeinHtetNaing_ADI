@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <None Update="Database\Freelancing_Project.mdf">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

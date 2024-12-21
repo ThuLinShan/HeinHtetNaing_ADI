@@ -59,14 +59,26 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
                 return;
             }
 
+            string firstName = firstNameTextBox.Text;
+            string lastName = lastNameTextBox.Text;
+            string email = emailTextBox.Text;
+            string password = passwordTextBox.Text;
+            string address = addressTextBox.Text;
+            string phoneNo = phoneNumberTextBox.Text;
+            string expertise = string.IsNullOrEmpty(expertiseTextBox.Text) ? string.Empty : expertiseTextBox.Text;
+            string websiteLink = string.IsNullOrEmpty(webSiteTextBox.Text) ? string.Empty : webSiteTextBox.Text;
+
+
             // Create new freelancer object
             var newFreelancer = new Freelancer(
-                firstNameTextBox.Text,
-                lastNameTextBox.Text,
-                emailTextBox.Text,
-                passwordTextBox.Text,
-                addressTextBox.Text,
-                phoneNumberTextBox.Text)
+            firstName,
+            lastName,
+            email,
+            password,
+            expertise,
+            address,
+            phoneNo,
+            websiteLink)
             { };
 
             // Fetch skills from DataGridView

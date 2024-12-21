@@ -36,6 +36,34 @@ namespace HeinHtetNaing_ADI.Services
             }
         }
 
+        public List<Project> GetAllCompletedProjectsByFreelancer(long freelancerId)
+        {
+            try
+            {
+                using var connection = _databaseService.GetConnection();
+                var query = "SELECT * FROM project WHERE freelancer_id = @FreelancerId AND status = @Status";
+                using var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@FreelancerId", freelancerId);
+                command.Parameters.AddWithValue("@Status", "Completed");
+
+                connection.Open();
+                using var reader = command.ExecuteReader();
+
+                var projects = new List<Project>();
+                while (reader.Read())
+                {
+                    projects.Add(MapReaderToProject(reader)); // Assuming MapReaderToProject maps the database row to a Project object
+                }
+
+                return projects;
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL Error: {ex.Message}");
+                throw;
+            }
+        }
+
         public Project? GetProjectById(long projectId)
         {
             try
@@ -189,6 +217,31 @@ namespace HeinHtetNaing_ADI.Services
                 var query = "SELECT * FROM project WHERE client_id = @ClientId";
                 using var command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@ClientId", clientId);
+
+                connection.Open();
+                using var reader = command.ExecuteReader();
+
+                var projects = new List<Project>();
+                while (reader.Read())
+                {
+                    projects.Add(MapReaderToProject(reader));
+                }
+                return projects;
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"SQL Error: {ex.Message}");
+                throw;
+            }
+        }
+        public IEnumerable<Project> GetOngoingProjectsByFreelancerId(long freelancerId)
+        {
+            try
+            {
+                using var connection = _databaseService.GetConnection();
+                var query = "SELECT * FROM project WHERE status = 'Ongoing' AND freelancer_id = @FreelancerId";
+                using var command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@FreelancerId", freelancerId);
 
                 connection.Open();
                 using var reader = command.ExecuteReader();

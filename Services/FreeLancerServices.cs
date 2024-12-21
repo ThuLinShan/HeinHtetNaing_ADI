@@ -27,12 +27,12 @@ namespace HeinHtetNaing_ADI.Services
 
                 try
                 {
-                    // Insert freelancer into the freelancer table
-                    var freelancerQuery = "INSERT INTO freelancer (freelancer_id, first_name, last_name, email, password_hash, address, phone_no, best_project, website_link, image, rating) " +
-                                          "VALUES (@FreelancerId, @FirstName, @LastName, @Email, @PasswordHash, @Address, @PhoneNo, @BestProject, @WebsiteLink, @Image, @Rating)";
+                    // Insert freelancer into the freelancer table, including the expertise field
+                    var freelancerQuery = "INSERT INTO freelancer (freelancer_id, first_name, last_name, email, password_hash, address, phone_no, best_project, website_link, image, rating, expertise) " +
+                                          "VALUES (@FreelancerId, @FirstName, @LastName, @Email, @PasswordHash, @Address, @PhoneNo, @BestProject, @WebsiteLink, @Image, @Rating, @Expertise)";
                     using (var freelancerCommand = new SqlCommand(freelancerQuery, connection, transaction))
                     {
-                        MapParameters(freelancerCommand, freelancer);
+                        MapParameters(freelancerCommand, freelancer);  // Make sure this method maps the new field too
                         freelancerCommand.ExecuteNonQuery();
                     }
 
@@ -84,6 +84,7 @@ namespace HeinHtetNaing_ADI.Services
                 throw;
             }
         }
+
 
         public Freelancer? GetFreelancerById(long freelancerId)
         {
@@ -551,7 +552,9 @@ namespace HeinHtetNaing_ADI.Services
             command.Parameters.AddWithValue("@WebsiteLink", freelancer.WebsiteLink ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@Image", freelancer.Image ?? (object)DBNull.Value);
             command.Parameters.AddWithValue("@Rating", freelancer.Rating ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@Expertise", freelancer.Expertise ?? (object)DBNull.Value); // Map expertise field
         }
+
 
         private static Skill MapReaderToSkill(SqlDataReader reader)
         {
@@ -579,9 +582,11 @@ namespace HeinHtetNaing_ADI.Services
                 WebsiteLink = reader["website_link"] as string,
                 Image = reader["image"] as string,
                 Rating = reader["rating"] as decimal?,
+                Expertise = reader["expertise"] as string, // Add this line to map the expertise field
                 Skills = new List<Skill>() // Initialize as an empty list by default
             };
         }
+
         #endregion
     }
 }

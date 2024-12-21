@@ -57,6 +57,10 @@
             panel6 = new Panel();
             panel7 = new Panel();
             panel8 = new Panel();
+            webSiteTextBox = new TextBox();
+            expertiseTextBox = new TextBox();
+            label1 = new Label();
+            label2 = new Label();
             clientSignupPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
@@ -67,14 +71,18 @@
             clientSignupPanel.Controls.Add(dataGridView1);
             clientSignupPanel.Controls.Add(backButton);
             clientSignupPanel.Controls.Add(signupButton);
+            clientSignupPanel.Controls.Add(label2);
             clientSignupPanel.Controls.Add(confirmPasswordLabel);
             clientSignupPanel.Controls.Add(passwordLabel);
+            clientSignupPanel.Controls.Add(label1);
             clientSignupPanel.Controls.Add(phoneNumberLabel);
             clientSignupPanel.Controls.Add(addressLabel);
             clientSignupPanel.Controls.Add(emailLabel);
             clientSignupPanel.Controls.Add(lastNameLabel);
             clientSignupPanel.Controls.Add(firstNameLabel);
+            clientSignupPanel.Controls.Add(expertiseTextBox);
             clientSignupPanel.Controls.Add(confirmPasswordTextBox);
+            clientSignupPanel.Controls.Add(webSiteTextBox);
             clientSignupPanel.Controls.Add(phoneNumberTextBox);
             clientSignupPanel.Controls.Add(passwordTextBox);
             clientSignupPanel.Controls.Add(addressTextBox);
@@ -94,8 +102,7 @@
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Columns.AddRange(new DataGridViewColumn[] { skill_name, skill_level });
             dataGridView1.GridColor = Color.Salmon;
-            dataGridView1.ForeColor = Color.Tomato;
-            dataGridView1.Location = new Point(474, 302);
+            dataGridView1.Location = new Point(474, 361);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.Size = new Size(362, 150);
             dataGridView1.TabIndex = 6;
@@ -116,22 +123,25 @@
             // 
             // backButton
             // 
+            backButton.BackColor = Color.Tomato;
+            backButton.FlatStyle = FlatStyle.Flat;
             backButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            backButton.ForeColor = Color.Tomato;
-            backButton.Location = new Point(643, 554);
+            backButton.ForeColor = Color.White;
+            backButton.Location = new Point(82, 540);
             backButton.Name = "backButton";
             backButton.Size = new Size(193, 38);
             backButton.TabIndex = 5;
             backButton.Text = "Back to Sign in";
-            backButton.UseVisualStyleBackColor = true;
+            backButton.UseVisualStyleBackColor = false;
             backButton.Click += backButton_Click;
             // 
             // signupButton
             // 
             signupButton.BackColor = Color.Tomato;
+            signupButton.FlatAppearance.BorderColor = Color.Chartreuse;
             signupButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             signupButton.ForeColor = Color.White;
-            signupButton.Location = new Point(281, 500);
+            signupButton.Location = new Point(281, 540);
             signupButton.Name = "signupButton";
             signupButton.Size = new Size(555, 38);
             signupButton.TabIndex = 4;
@@ -357,6 +367,47 @@
             panel8.Size = new Size(37, 100);
             panel8.TabIndex = 2;
             // 
+            // webSiteTextBox
+            // 
+            webSiteTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            webSiteTextBox.ForeColor = Color.DarkRed;
+            webSiteTextBox.Location = new Point(82, 482);
+            webSiteTextBox.Name = "webSiteTextBox";
+            webSiteTextBox.Size = new Size(362, 29);
+            webSiteTextBox.TabIndex = 2;
+            // 
+            // expertiseTextBox
+            // 
+            expertiseTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            expertiseTextBox.ForeColor = Color.DarkRed;
+            expertiseTextBox.Location = new Point(474, 297);
+            expertiseTextBox.Name = "expertiseTextBox";
+            expertiseTextBox.PasswordChar = '*';
+            expertiseTextBox.Size = new Size(362, 29);
+            expertiseTextBox.TabIndex = 2;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 9.75F);
+            label1.ForeColor = Color.White;
+            label1.Location = new Point(82, 464);
+            label1.Name = "label1";
+            label1.Size = new Size(117, 17);
+            label1.TabIndex = 3;
+            label1.Text = "Portfolio webiste : ";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 9.75F);
+            label2.ForeColor = Color.White;
+            label2.Location = new Point(474, 279);
+            label2.Name = "label2";
+            label2.Size = new Size(61, 17);
+            label2.TabIndex = 3;
+            label2.Text = "Expertise";
+            // 
             // FreelancerSignupForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -413,5 +464,9 @@
         private Panel panel6;
         private Panel panel7;
         private Panel panel8;
+        private Label label2;
+        private Label label1;
+        private TextBox expertiseTextBox;
+        private TextBox webSiteTextBox;
     }
 }
