@@ -250,6 +250,16 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
             }
         }
 
+        private void searchFreelancerButton_Click(object sender, EventArgs e)
+        {
+            Form browseFreelancerForm = new ClientBrowseFreelancerForm();
+            browseFreelancerForm.FormClosed += (s, args) =>
+            {
+                // Reload the form or refresh the contents here
+                this.ClientHomeForm_Load(sender, e);
+            };
+            browseFreelancerForm.ShowDialog();
+        }
     }
 
 }

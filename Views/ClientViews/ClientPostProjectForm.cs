@@ -42,7 +42,6 @@ namespace HeinHtetNaing_ADI.Views.ClientViews
         private void clearStartDateButton_Click(object sender, EventArgs e)
         {
             this.startDateTimePicker.CustomFormat = " ";
-            startDateTimePicker.Value = DateTime.Now;
 
         }
 

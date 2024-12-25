@@ -36,6 +36,19 @@ namespace HeinHtetNaing_ADI.Views.FreelancerViews
                 return;
             }
 
+            // Password validation: between 8 and 12 characters, with at least one lowercase and one uppercase letter
+            string inputPassword = passwordTextBox.Text;
+            if (inputPassword.Length < 8 || inputPassword.Length > 12 ||
+                !inputPassword.Any(char.IsLower) || !inputPassword.Any(char.IsUpper))
+            {
+                MessageBox.Show(
+                    "Password must be between 8 and 12 characters long and contain at least one lowercase and one uppercase letter.",
+                    "Validation Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+            }
+
             // Validate password confirmation
             if (passwordTextBox.Text != confirmPasswordTextBox.Text)
             {

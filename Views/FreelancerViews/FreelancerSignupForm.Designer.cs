@@ -34,14 +34,18 @@
             skill_level = new DataGridViewComboBoxColumn();
             backButton = new Button();
             signupButton = new Button();
+            label2 = new Label();
             confirmPasswordLabel = new Label();
             passwordLabel = new Label();
+            label1 = new Label();
             phoneNumberLabel = new Label();
             addressLabel = new Label();
             emailLabel = new Label();
             lastNameLabel = new Label();
             firstNameLabel = new Label();
+            expertiseTextBox = new TextBox();
             confirmPasswordTextBox = new TextBox();
+            webSiteTextBox = new TextBox();
             phoneNumberTextBox = new TextBox();
             passwordTextBox = new TextBox();
             addressTextBox = new TextBox();
@@ -57,10 +61,6 @@
             panel6 = new Panel();
             panel7 = new Panel();
             panel8 = new Panel();
-            webSiteTextBox = new TextBox();
-            expertiseTextBox = new TextBox();
-            label1 = new Label();
-            label2 = new Label();
             clientSignupPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
@@ -149,6 +149,17 @@
             signupButton.UseVisualStyleBackColor = false;
             signupButton.Click += signupButton_Click;
             // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 9.75F);
+            label2.ForeColor = Color.White;
+            label2.Location = new Point(474, 279);
+            label2.Name = "label2";
+            label2.Size = new Size(61, 17);
+            label2.TabIndex = 3;
+            label2.Text = "Expertise";
+            // 
             // confirmPasswordLabel
             // 
             confirmPasswordLabel.AutoSize = true;
@@ -170,6 +181,17 @@
             passwordLabel.Size = new Size(64, 17);
             passwordLabel.TabIndex = 3;
             passwordLabel.Text = "Password";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 9.75F);
+            label1.ForeColor = Color.White;
+            label1.Location = new Point(82, 464);
+            label1.Name = "label1";
+            label1.Size = new Size(117, 17);
+            label1.TabIndex = 3;
+            label1.Text = "Portfolio webiste : ";
             // 
             // phoneNumberLabel
             // 
@@ -226,6 +248,15 @@
             firstNameLabel.TabIndex = 3;
             firstNameLabel.Text = "First Name : ";
             // 
+            // expertiseTextBox
+            // 
+            expertiseTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            expertiseTextBox.ForeColor = Color.DarkRed;
+            expertiseTextBox.Location = new Point(474, 297);
+            expertiseTextBox.Name = "expertiseTextBox";
+            expertiseTextBox.Size = new Size(362, 29);
+            expertiseTextBox.TabIndex = 2;
+            // 
             // confirmPasswordTextBox
             // 
             confirmPasswordTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -235,6 +266,15 @@
             confirmPasswordTextBox.PasswordChar = '*';
             confirmPasswordTextBox.Size = new Size(362, 29);
             confirmPasswordTextBox.TabIndex = 2;
+            // 
+            // webSiteTextBox
+            // 
+            webSiteTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            webSiteTextBox.ForeColor = Color.DarkRed;
+            webSiteTextBox.Location = new Point(82, 482);
+            webSiteTextBox.Name = "webSiteTextBox";
+            webSiteTextBox.Size = new Size(362, 29);
+            webSiteTextBox.TabIndex = 2;
             // 
             // phoneNumberTextBox
             // 
@@ -366,47 +406,6 @@
             panel8.Name = "panel8";
             panel8.Size = new Size(37, 100);
             panel8.TabIndex = 2;
-            // 
-            // webSiteTextBox
-            // 
-            webSiteTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            webSiteTextBox.ForeColor = Color.DarkRed;
-            webSiteTextBox.Location = new Point(82, 482);
-            webSiteTextBox.Name = "webSiteTextBox";
-            webSiteTextBox.Size = new Size(362, 29);
-            webSiteTextBox.TabIndex = 2;
-            // 
-            // expertiseTextBox
-            // 
-            expertiseTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            expertiseTextBox.ForeColor = Color.DarkRed;
-            expertiseTextBox.Location = new Point(474, 297);
-            expertiseTextBox.Name = "expertiseTextBox";
-            expertiseTextBox.PasswordChar = '*';
-            expertiseTextBox.Size = new Size(362, 29);
-            expertiseTextBox.TabIndex = 2;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 9.75F);
-            label1.ForeColor = Color.White;
-            label1.Location = new Point(82, 464);
-            label1.Name = "label1";
-            label1.Size = new Size(117, 17);
-            label1.TabIndex = 3;
-            label1.Text = "Portfolio webiste : ";
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Font = new Font("Segoe UI", 9.75F);
-            label2.ForeColor = Color.White;
-            label2.Location = new Point(474, 279);
-            label2.Name = "label2";
-            label2.Size = new Size(61, 17);
-            label2.TabIndex = 3;
-            label2.Text = "Expertise";
             // 
             // FreelancerSignupForm
             // 

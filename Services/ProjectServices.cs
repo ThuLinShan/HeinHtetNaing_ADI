@@ -159,26 +159,40 @@ namespace HeinHtetNaing_ADI.Services
             {
                 using var connection = _databaseService.GetConnection();
 
-                // Define the base query
+                // Base query with relevance score calculation
                 var query = @"
-                            SELECT 
-                                p.*, 
-                                (SELECT COUNT(*) 
-                                 FROM bids b 
-                                 WHERE b.project_id = p.project_id) AS TotalBids
-                            FROM project p
-                            WHERE p.status = 'Pending' 
-                            AND NOT EXISTS (
-                                SELECT 1 
-                                FROM bids b 
-                                WHERE b.freelancer_id = @FreelancerId AND b.project_id = p.project_id
-                            )";
+            WITH FreelancerSkills AS (
+                SELECT skill_name
+                FROM skill
+                WHERE freelancer_id = @FreelancerId
+            )
+            SELECT 
+                p.*, 
+                (SELECT COUNT(*) 
+                 FROM bids b 
+                 WHERE b.project_id = p.project_id) AS TotalBids,
+                COALESCE((
+                    SELECT COUNT(1)
+                    FROM FreelancerSkills fs
+                    WHERE CHARINDEX(fs.skill_name, p.skill_tags) > 0
+                ), 0) AS RelevanceScore
+            FROM project p
+            WHERE p.status = 'Pending' 
+            AND NOT EXISTS (
+                SELECT 1 
+                FROM bids b 
+                WHERE b.freelancer_id = @FreelancerId AND b.project_id = p.project_id
+            )
+            ";
 
                 // Add keyword filter if provided
                 if (!string.IsNullOrEmpty(keyword))
                 {
-                    query += " AND (p.title LIKE @Keyword)";
+                    query += " AND (p.title LIKE @Keyword OR p.description LIKE @Keyword)";
                 }
+
+                // Sort by relevance score and total bids
+                query += " ORDER BY RelevanceScore DESC, TotalBids ASC";
 
                 using var command = new SqlCommand(query, connection);
                 command.Parameters.AddWithValue("@FreelancerId", freelancerId);
@@ -207,6 +221,7 @@ namespace HeinHtetNaing_ADI.Services
                 throw;
             }
         }
+
 
 
         public IEnumerable<Project> GetAllProjectsByClientId(long clientId)

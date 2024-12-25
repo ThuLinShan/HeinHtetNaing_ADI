@@ -56,6 +56,7 @@
             firstNameLabel = new Label();
             userNameLabel = new Label();
             panel1 = new Panel();
+            searchFreelancerButton = new Button();
             postProjectButton = new Button();
             projectContainerPanel.SuspendLayout();
             projectPanel.SuspendLayout();
@@ -384,11 +385,28 @@
             // 
             panel1.BackColor = Color.White;
             panel1.Controls.Add(userNameLabel);
+            panel1.Controls.Add(searchFreelancerButton);
             panel1.Controls.Add(postProjectButton);
             panel1.Location = new Point(12, 12);
             panel1.Name = "panel1";
             panel1.Size = new Size(1160, 47);
             panel1.TabIndex = 2;
+            // 
+            // searchFreelancerButton
+            // 
+            searchFreelancerButton.BackColor = Color.White;
+            searchFreelancerButton.FlatAppearance.BorderColor = Color.DarkRed;
+            searchFreelancerButton.FlatAppearance.BorderSize = 2;
+            searchFreelancerButton.FlatStyle = FlatStyle.Flat;
+            searchFreelancerButton.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            searchFreelancerButton.ForeColor = Color.DarkRed;
+            searchFreelancerButton.Location = new Point(737, 0);
+            searchFreelancerButton.Name = "searchFreelancerButton";
+            searchFreelancerButton.Size = new Size(201, 47);
+            searchFreelancerButton.TabIndex = 0;
+            searchFreelancerButton.Text = "Search Freelancers";
+            searchFreelancerButton.UseVisualStyleBackColor = false;
+            searchFreelancerButton.Click += searchFreelancerButton_Click;
             // 
             // postProjectButton
             // 
@@ -460,5 +478,6 @@
         private TextBox firstNameTextBox;
         private Label userDetailsLabel;
         private Button updateUserButton;
+        private Button searchFreelancerButton;
     }
 }

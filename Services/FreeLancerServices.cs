@@ -145,48 +145,64 @@ namespace HeinHtetNaing_ADI.Services
             }
         }
 
-
-        public IEnumerable<Freelancer> GetAllFreelancers()
+        public IEnumerable<Freelancer> BrowseFreelancers(string keyword)
         {
             try
             {
                 using var connection = _databaseService.GetConnection();
 
-                // Step 1: Retrieve all freelancers
-                var freelancersQuery = "SELECT * FROM freelancer";
-                using var command = new SqlCommand(freelancersQuery, connection);
+                // Step 1: Define query to fetch freelancers matching the keyword
+                var query = @"
+            SELECT f.freelancer_id, f.first_name, f.last_name, f.email, f.password_hash, 
+                   f.address, f.phone_no, f.best_project, f.website_link, f.image, f.rating, f.expertise
+            FROM freelancer f
+            LEFT JOIN skill s ON f.freelancer_id = s.freelancer_id
+            WHERE (@Keyword IS NULL OR s.skill_name LIKE @Keyword OR f.expertise LIKE @Keyword)";
+
+                using var command = new SqlCommand(query, connection);
+
+                // Add keyword parameter
+                if (!string.IsNullOrEmpty(keyword))
+                {
+                    command.Parameters.AddWithValue("@Keyword", $"%{keyword}%");
+                }
+                else
+                {
+                    command.Parameters.AddWithValue("@Keyword", DBNull.Value);
+                }
 
                 connection.Open();
                 using var reader = command.ExecuteReader();
 
-                var freelancers = new List<Freelancer>();
-                var freelancerIds = new List<long>();
+                // Step 2: Create a dictionary to hold freelancer details and their skills
+                var freelancers = new Dictionary<long, Freelancer>();
 
                 while (reader.Read())
                 {
-                    var freelancer = MapReaderToFreelancer(reader);
-                    freelancers.Add(freelancer);
-                    freelancerIds.Add(freelancer.FreelancerId);
+                    var freelancerId = reader.GetInt64(reader.GetOrdinal("freelancer_id"));
+
+                    // If freelancer is already in the dictionary, skip adding them again
+                    if (!freelancers.ContainsKey(freelancerId))
+                    {
+                        var freelancer = MapReaderToFreelancer(reader);
+                        freelancers[freelancerId] = freelancer;
+                    }
                 }
 
-                // If no freelancers exist, return an empty list
-                if (!freelancers.Any())
-                {
-                    return freelancers;
-                }
-
-                // Step 2: Fetch all skills in a single query for the collected freelancer IDs
+                // Step 3: Fetch skills for the freelancers
+                var freelancerIds = freelancers.Keys.ToList();
+                reader.Close();
                 var skills = GetSkillsByFreelancerIds(freelancerIds, connection);
 
-                // Step 3: Map skills to their respective freelancers
-                foreach (var freelancer in freelancers)
+                // Step 4: Map skills to their respective freelancers
+                foreach (var freelancer in freelancers.Values)
                 {
                     freelancer.Skills = skills.ContainsKey(freelancer.FreelancerId)
                         ? skills[freelancer.FreelancerId]
                         : new List<Skill>();
                 }
 
-                return freelancers;
+                return freelancers.Values;
             }
             catch (SqlException ex)
             {
@@ -194,6 +210,7 @@ namespace HeinHtetNaing_ADI.Services
                 throw;
             }
         }
+
 
         public void UpdateFreelancer(Freelancer freelancer)
         {
@@ -205,7 +222,7 @@ namespace HeinHtetNaing_ADI.Services
 
                 try
                 {
-                    // Step 1: Update freelancer details (same as your current code)
+                    // Step 1: Update freelancer details
                     var query = "UPDATE freelancer SET first_name = @FirstName, last_name = @LastName, email = @Email, " +
                                 "password_hash = @PasswordHash, address = @Address, phone_no = @PhoneNo, best_project = @BestProject, " +
                                 "website_link = @WebsiteLink, image = @Image, rating = @Rating WHERE freelancer_id = @FreelancerId";
@@ -220,6 +237,16 @@ namespace HeinHtetNaing_ADI.Services
                     // Step 3: Compare existing skills with the new skills and process accordingly
                     ProcessSkillsBatch(freelancer.Skills, existingSkills, freelancer.FreelancerId, connection, transaction);
 
+                    // Step 4: Update `freelancer_name` in the `Bids` table
+                    var updateBidsQuery = "UPDATE bids " +
+                                           "SET freelancer_name = @FreelancerName " +
+                                           "WHERE freelancer_id = @FreelancerId";
+
+                    using var updateCommand = new SqlCommand(updateBidsQuery, connection, transaction);
+                    updateCommand.Parameters.AddWithValue("@FreelancerName", $"{freelancer.FirstName} {freelancer.LastName}");
+                    updateCommand.Parameters.AddWithValue("@FreelancerId", freelancer.FreelancerId);
+                    updateCommand.ExecuteNonQuery();
+
                     // Commit the transaction after all operations are successful
                     transaction.Commit();
                 }
@@ -227,7 +254,7 @@ namespace HeinHtetNaing_ADI.Services
                 {
                     // Rollback the transaction in case of any error
                     transaction.Rollback();
-                    throw new Exception($"Error updating freelancer and skills: {ex.Message}", ex);
+                    throw new Exception($"Error updating freelancer and related records: {ex.Message}", ex);
                 }
             }
             catch (SqlException ex)
@@ -236,6 +263,7 @@ namespace HeinHtetNaing_ADI.Services
                 throw;
             }
         }
+
 
 
         public void DeleteFreelancer(long freelancerId)
