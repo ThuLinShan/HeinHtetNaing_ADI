@@ -1,6 +1,6 @@
 ﻿using HeinHtetNaing_ADI.Common.DTOs;
 using HeinHtetNaing_ADI.Models;
-using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 using System.Text;
 
 namespace HeinHtetNaing_ADI.Services
@@ -30,7 +30,7 @@ namespace HeinHtetNaing_ADI.Services
                     // Insert freelancer into the freelancer table, including the expertise field
                     var freelancerQuery = "INSERT INTO freelancer (freelancer_id, first_name, last_name, email, password_hash, address, phone_no, best_project, website_link, image, rating, expertise) " +
                                           "VALUES (@FreelancerId, @FirstName, @LastName, @Email, @PasswordHash, @Address, @PhoneNo, @BestProject, @WebsiteLink, @Image, @Rating, @Expertise)";
-                    using (var freelancerCommand = new SqlCommand(freelancerQuery, connection, transaction))
+                    using (var freelancerCommand = new MySqlCommand(freelancerQuery, connection, transaction))
                     {
                         MapParameters(freelancerCommand, freelancer);  // Make sure this method maps the new field too
                         freelancerCommand.ExecuteNonQuery();
@@ -52,7 +52,7 @@ namespace HeinHtetNaing_ADI.Services
                             }
                         }
 
-                        using var skillCommand = new SqlCommand(skillQuery.ToString(), connection, transaction);
+                        using var skillCommand = new MySqlCommand(skillQuery.ToString(), connection, transaction);
 
                         // Add parameters for each skill
                         for (int i = 0; i < freelancer.Skills.Count; i++)
@@ -78,13 +78,12 @@ namespace HeinHtetNaing_ADI.Services
                     throw;
                 }
             }
-            catch (SqlException ex)
+            catch (MySqlException ex)
             {
-                Console.WriteLine($"SQL Error: {ex.Message}");
+                Console.WriteLine($"MySQL Error: {ex.Message}");
                 throw;
             }
         }
-
 
         public Freelancer? GetFreelancerById(long freelancerId)
         {
@@ -92,7 +91,7 @@ namespace HeinHtetNaing_ADI.Services
             {
                 using var connection = _databaseService.GetConnection();
                 var query = "SELECT * FROM freelancer WHERE freelancer_id = @FreelancerId";
-                using var command = new SqlCommand(query, connection);
+                using var command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@FreelancerId", freelancerId);
 
                 connection.Open();
@@ -107,20 +106,20 @@ namespace HeinHtetNaing_ADI.Services
                 }
                 return null;
             }
-            catch (SqlException ex)
+            catch (MySqlException ex)
             {
-                Console.WriteLine($"SQL Error: {ex.Message}");
+                Console.WriteLine($"MySQL Error: {ex.Message}");
                 throw;
             }
         }
-
+        #endregion
         public Freelancer? FindFreelancerByEmail(string email)
         {
             try
             {
                 using var connection = _databaseService.GetConnection();
                 var query = "SELECT * FROM freelancer WHERE email = @Email";
-                using var command = new SqlCommand(query, connection);
+                using var command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@Email", email);
 
                 connection.Open();
@@ -138,9 +137,9 @@ namespace HeinHtetNaing_ADI.Services
                 }
                 return null;
             }
-            catch (SqlException ex)
+            catch (MySqlException ex)
             {
-                Console.WriteLine($"SQL Error: {ex.Message}");
+                Console.WriteLine($"MySQL Error: {ex.Message}");
                 throw;
             }
         }
@@ -153,13 +152,13 @@ namespace HeinHtetNaing_ADI.Services
 
                 // Step 1: Define query to fetch freelancers matching the keyword
                 var query = @"
-            SELECT f.freelancer_id, f.first_name, f.last_name, f.email, f.password_hash, 
-                   f.address, f.phone_no, f.best_project, f.website_link, f.image, f.rating, f.expertise
-            FROM freelancer f
-            LEFT JOIN skill s ON f.freelancer_id = s.freelancer_id
-            WHERE (@Keyword IS NULL OR s.skill_name LIKE @Keyword OR f.expertise LIKE @Keyword)";
+        SELECT f.freelancer_id, f.first_name, f.last_name, f.email, f.password_hash, 
+               f.address, f.phone_no, f.best_project, f.website_link, f.image, f.rating, f.expertise
+        FROM freelancer f
+        LEFT JOIN skill s ON f.freelancer_id = s.freelancer_id
+        WHERE (@Keyword IS NULL OR s.skill_name LIKE @Keyword OR f.expertise LIKE @Keyword)";
 
-                using var command = new SqlCommand(query, connection);
+                using var command = new MySqlCommand(query, connection);
 
                 // Add keyword parameter
                 if (!string.IsNullOrEmpty(keyword))
@@ -204,9 +203,9 @@ namespace HeinHtetNaing_ADI.Services
 
                 return freelancers.Values;
             }
-            catch (SqlException ex)
+            catch (MySqlException ex)
             {
-                Console.WriteLine($"SQL Error: {ex.Message}");
+                Console.WriteLine($"MySQL Error: {ex.Message}");
                 throw;
             }
         }
@@ -226,7 +225,7 @@ namespace HeinHtetNaing_ADI.Services
                     var query = "UPDATE freelancer SET first_name = @FirstName, last_name = @LastName, email = @Email, " +
                                 "password_hash = @PasswordHash, address = @Address, phone_no = @PhoneNo, best_project = @BestProject, " +
                                 "website_link = @WebsiteLink, image = @Image, rating = @Rating WHERE freelancer_id = @FreelancerId";
-                    using var command = new SqlCommand(query, connection, transaction);
+                    using var command = new MySqlCommand(query, connection, transaction);
 
                     MapParameters(command, freelancer);
                     command.ExecuteNonQuery();
@@ -242,7 +241,7 @@ namespace HeinHtetNaing_ADI.Services
                                            "SET freelancer_name = @FreelancerName " +
                                            "WHERE freelancer_id = @FreelancerId";
 
-                    using var updateCommand = new SqlCommand(updateBidsQuery, connection, transaction);
+                    using var updateCommand = new MySqlCommand(updateBidsQuery, connection, transaction);
                     updateCommand.Parameters.AddWithValue("@FreelancerName", $"{freelancer.FirstName} {freelancer.LastName}");
                     updateCommand.Parameters.AddWithValue("@FreelancerId", freelancer.FreelancerId);
                     updateCommand.ExecuteNonQuery();
@@ -257,14 +256,12 @@ namespace HeinHtetNaing_ADI.Services
                     throw new Exception($"Error updating freelancer and related records: {ex.Message}", ex);
                 }
             }
-            catch (SqlException ex)
+            catch (MySqlException ex)
             {
-                Console.WriteLine($"SQL Error: {ex.Message}");
+                Console.WriteLine($"MySQL Error: {ex.Message}");
                 throw;
             }
         }
-
-
 
         public void DeleteFreelancer(long freelancerId)
         {
@@ -278,7 +275,7 @@ namespace HeinHtetNaing_ADI.Services
                 {
                     // Delete skills associated with the freelancer
                     var deleteSkillsQuery = "DELETE FROM skill WHERE freelancer_id = @FreelancerId";
-                    using (var deleteSkillsCommand = new SqlCommand(deleteSkillsQuery, connection, transaction))
+                    using (var deleteSkillsCommand = new MySqlCommand(deleteSkillsQuery, connection, transaction))
                     {
                         deleteSkillsCommand.Parameters.AddWithValue("@FreelancerId", freelancerId);
                         deleteSkillsCommand.ExecuteNonQuery();
@@ -286,7 +283,7 @@ namespace HeinHtetNaing_ADI.Services
 
                     // Delete the freelancer
                     var deleteFreelancerQuery = "DELETE FROM freelancer WHERE freelancer_id = @FreelancerId";
-                    using (var deleteFreelancerCommand = new SqlCommand(deleteFreelancerQuery, connection, transaction))
+                    using (var deleteFreelancerCommand = new MySqlCommand(deleteFreelancerQuery, connection, transaction))
                     {
                         deleteFreelancerCommand.Parameters.AddWithValue("@FreelancerId", freelancerId);
                         deleteFreelancerCommand.ExecuteNonQuery();
@@ -302,63 +299,19 @@ namespace HeinHtetNaing_ADI.Services
                     throw;
                 }
             }
-            catch (SqlException ex)
+            catch (MySqlException ex)
             {
-                Console.WriteLine($"SQL Error: {ex.Message}");
+                Console.WriteLine($"MySQL Error: {ex.Message}");
                 throw;
             }
         }
-
-
-        public PagedResult<Freelancer> GetPagedFreelancer(int pageNumber, int pageSize)
-        {
-            try
-            {
-                using var connection = _databaseService.GetConnection();
-
-                // Calculate the offset for pagination
-                int offset = (pageNumber - 1) * pageSize;
-
-                // Query to get paginated freelancers
-                var query = "SELECT * FROM freelancer ORDER BY freelancer_id OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
-
-                using var command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@Offset", offset);
-                command.Parameters.AddWithValue("@PageSize", pageSize);
-
-                connection.Open();
-                using var reader = command.ExecuteReader();
-
-                // Read all freelancers in one go
-                var freelancers = new List<Freelancer>();
-                while (reader.Read())
-                {
-                    freelancers.Add(MapReaderToFreelancer(reader));
-                }
-
-                // Query to get total count of freelancers
-                var countQuery = "SELECT COUNT(*) FROM freelancer";
-                using var countCommand = new SqlCommand(countQuery, connection);
-                var totalCount = Convert.ToInt32(countCommand.ExecuteScalar());
-
-                // Return paginated result
-                return new PagedResult<Freelancer>(freelancers, totalCount, offset, pageSize);
-            }
-            catch (SqlException ex)
-            {
-                Console.WriteLine($"SQL Error: {ex.Message}");
-                throw;
-            }
-        }
-        #endregion
-
 
         #region skill
 
-        private List<Skill> GetExistingSkills(long freelancerId, SqlConnection connection, SqlTransaction transaction)
+        private List<Skill> GetExistingSkills(long freelancerId, MySqlConnection connection, MySqlTransaction transaction)
         {
             var query = "SELECT skill_id, skill_name, skill_level FROM skill WHERE freelancer_id = @FreelancerId";
-            using var command = new SqlCommand(query, connection, transaction);
+            using var command = new MySqlCommand(query, connection, transaction);
             command.Parameters.AddWithValue("@FreelancerId", freelancerId);
 
             using var reader = command.ExecuteReader();
@@ -377,7 +330,8 @@ namespace HeinHtetNaing_ADI.Services
             return existingSkills;
         }
 
-        private void ProcessSkillsBatch(List<Skill> newSkills, List<Skill> existingSkills, long freelancerId, SqlConnection connection, SqlTransaction transaction)
+
+        private void ProcessSkillsBatch(List<Skill> newSkills, List<Skill> existingSkills, long freelancerId, MySqlConnection connection, MySqlTransaction transaction)
         {
             // Step 1: Delete removed skills (skills that are in existingSkills but not in newSkills)
             var removedSkills = existingSkills.Where(existingSkill => !newSkills.Any(newSkill => newSkill.SkillId == existingSkill.SkillId)).ToList();
@@ -387,7 +341,7 @@ namespace HeinHtetNaing_ADI.Services
                 var parameters = new List<string>();
 
                 // Add individual parameters for each skill_id
-                using var deleteCommand = new SqlCommand(deleteQuery, connection, transaction);
+                using var deleteCommand = new MySqlCommand(deleteQuery, connection, transaction);
 
                 for (int i = 0; i < removedSkills.Count; i++)
                 {
@@ -407,19 +361,19 @@ namespace HeinHtetNaing_ADI.Services
 
             // Step 2: Update existing skills (those that have changed)
             var updatedSkills = newSkills.Where(newSkill => existingSkills.Any(existingSkill => existingSkill.SkillId == newSkill.SkillId &&
-                                                                                                 (existingSkill.SkillLevel != newSkill.SkillLevel ||
-                                                                                                  existingSkill.SkillName != newSkill.SkillName))).ToList();
+                                                                                                         (existingSkill.SkillLevel != newSkill.SkillLevel ||
+                                                                                                          existingSkill.SkillName != newSkill.SkillName))).ToList();
             if (updatedSkills.Any())
             {
                 // Loop through each updated skill and execute an individual UPDATE query
                 foreach (var updatedSkill in updatedSkills)
                 {
                     var updateQuery = @"
-                                        UPDATE skill
-                                        SET skill_name = @SkillName, skill_level = @SkillLevel
-                                        WHERE freelancer_id = @FreelancerId AND skill_id = @SkillId";
+                                    UPDATE skill
+                                    SET skill_name = @SkillName, skill_level = @SkillLevel
+                                    WHERE freelancer_id = @FreelancerId AND skill_id = @SkillId";
 
-                    using var updateCommand = new SqlCommand(updateQuery, connection, transaction);
+                    using var updateCommand = new MySqlCommand(updateQuery, connection, transaction);
 
                     // Add parameters for the current updated skill
                     updateCommand.Parameters.AddWithValue("@FreelancerId", freelancerId);
@@ -432,17 +386,16 @@ namespace HeinHtetNaing_ADI.Services
                 }
             }
 
-
             // Step 3: Add new skills (those that are in newSkills but not in existingSkills)
             var newSkillsToAdd = newSkills.Where(newSkill => !existingSkills.Any(existingSkill => existingSkill.SkillId == newSkill.SkillId)).ToList();
             if (newSkillsToAdd.Any())
             {
                 var insertQuery = @"
-                        INSERT INTO skill (freelancer_id, skill_id, skill_name, skill_level)
-                        VALUES " +
-                        string.Join(", ", newSkillsToAdd.Select(skill => $"(@FreelancerId, @SkillId_{skill.SkillId}, @SkillName_{skill.SkillId}, @SkillLevel_{skill.SkillId})"));
+                            INSERT INTO skill (freelancer_id, skill_id, skill_name, skill_level)
+                            VALUES " +
+                                    string.Join(", ", newSkillsToAdd.Select(skill => $"(@FreelancerId, @SkillId_{skill.SkillId}, @SkillName_{skill.SkillId}, @SkillLevel_{skill.SkillId})"));
 
-                using var insertCommand = new SqlCommand(insertQuery, connection, transaction);
+                using var insertCommand = new MySqlCommand(insertQuery, connection, transaction);
                 insertCommand.Parameters.AddWithValue("@FreelancerId", freelancerId);
 
                 // Add parameters for each new skill
@@ -455,17 +408,16 @@ namespace HeinHtetNaing_ADI.Services
 
                 insertCommand.ExecuteNonQuery();
             }
-
         }
 
         public void AddSkillToFreelancer(long freelancerId, Skill skill)
         {
             try
             {
-                using var connection = _databaseService.GetConnection();
+                using var connection = _databaseService.GetConnection();  // Assuming GetMySqlConnection is adapted for MySQL
                 var query = "INSERT INTO skill (freelancer_id, skill_name, skill_level) " +
                             "VALUES (@FreelancerId, @SkillName, @SkillLevel)";
-                using var command = new SqlCommand(query, connection);
+                using var command = new MySqlCommand(query, connection);
 
                 command.Parameters.AddWithValue("@FreelancerId", freelancerId);
                 command.Parameters.AddWithValue("@SkillName", skill.SkillName ?? (object)DBNull.Value);
@@ -474,9 +426,9 @@ namespace HeinHtetNaing_ADI.Services
                 connection.Open();
                 command.ExecuteNonQuery();
             }
-            catch (SqlException ex)
+            catch (MySqlException ex)
             {
-                Console.WriteLine($"SQL Error: {ex.Message}");
+                Console.WriteLine($"MySQL Error: {ex.Message}");
                 throw;
             }
         }
@@ -485,33 +437,36 @@ namespace HeinHtetNaing_ADI.Services
         {
             try
             {
-                using var connection = _databaseService.GetConnection();
+                using var connection = _databaseService.GetConnection();  // Assuming GetMySqlConnection is adapted for MySQL
                 var query = "UPDATE skill SET skill_name = @SkillName, skill_level = @SkillLevel " +
                             "WHERE skill_id = @SkillId";
-                using var command = new SqlCommand(query, connection);
+                using var command = new MySqlCommand(query, connection);
 
+                // Handle potential null or empty strings explicitly before adding them to parameters
                 command.Parameters.AddWithValue("@SkillId", skill.SkillId);
-                command.Parameters.AddWithValue("@SkillName", skill.SkillName ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@SkillLevel", skill.SkillLevel ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@SkillName", string.IsNullOrEmpty(skill.SkillName) ? (object)DBNull.Value : skill.SkillName);
+                command.Parameters.AddWithValue("@SkillLevel", string.IsNullOrEmpty(skill.SkillLevel) ? (object)DBNull.Value : skill.SkillLevel);
 
                 connection.Open();
                 command.ExecuteNonQuery();
             }
-            catch (SqlException ex)
+            catch (MySqlException ex)
             {
-                Console.WriteLine($"SQL Error: {ex.Message}");
+                Console.WriteLine($"MySQL Error: {ex.Message}");
                 throw;
             }
         }
 
-        private List<Skill> GetSkillsByFreelancerId(long freelancerId, SqlConnection connection)
+
+
+        private List<Skill> GetSkillsByFreelancerId(long freelancerId, MySqlConnection connection)
         {
             var skills = new List<Skill>();
 
             try
             {
                 var query = "SELECT * FROM skill WHERE freelancer_id = @FreelancerId";
-                using var command = new SqlCommand(query, connection);
+                using var command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@FreelancerId", freelancerId);
 
                 using var reader = command.ExecuteReader();
@@ -521,16 +476,16 @@ namespace HeinHtetNaing_ADI.Services
                     skills.Add(skill);
                 }
             }
-            catch (SqlException ex)
+            catch (MySqlException ex)
             {
-                Console.WriteLine($"SQL Error when fetching skills: {ex.Message}");
+                Console.WriteLine($"MySQL Error when fetching skills: {ex.Message}");
                 throw;
             }
 
             return skills;
         }
 
-        private Dictionary<long, List<Skill>> GetSkillsByFreelancerIds(IEnumerable<long> freelancerIds, SqlConnection connection)
+        private Dictionary<long, List<Skill>> GetSkillsByFreelancerIds(IEnumerable<long> freelancerIds, MySqlConnection connection)
         {
             // If no freelancer IDs are provided, return an empty dictionary
             if (!freelancerIds.Any())
@@ -538,12 +493,17 @@ namespace HeinHtetNaing_ADI.Services
                 return new Dictionary<long, List<Skill>>();
             }
 
-            // Prepare a comma-separated list of freelancer IDs for the SQL query
-            var idList = string.Join(",", freelancerIds);
+            // Create the parameterized query for multiple freelancer IDs
+            var query = "SELECT * FROM skill WHERE freelancer_id IN (" +
+                        string.Join(", ", freelancerIds.Select((id, index) => $"@FreelancerId{index}")) + ")";
 
-            // Query to fetch all skills for the given freelancer IDs
-            var query = $"SELECT * FROM skill WHERE freelancer_id IN ({idList})";
-            using var command = new SqlCommand(query, connection);
+            using var command = new MySqlCommand(query, connection);
+
+            // Add parameters for each freelancerId
+            for (int i = 0; i < freelancerIds.Count(); i++)
+            {
+                command.Parameters.AddWithValue($"@FreelancerId{i}", freelancerIds.ElementAt(i));
+            }
 
             using var reader = command.ExecuteReader();
 
@@ -563,11 +523,11 @@ namespace HeinHtetNaing_ADI.Services
 
             return skillsByFreelancerId;
         }
+
         #endregion
 
-
         #region Helpers
-        private static void MapParameters(SqlCommand command, Freelancer freelancer)
+        private static void MapParameters(MySqlCommand command, Freelancer freelancer)
         {
             command.Parameters.AddWithValue("@FreelancerId", freelancer.FreelancerId);
             command.Parameters.AddWithValue("@FirstName", freelancer.FirstName ?? (object)DBNull.Value);
@@ -583,8 +543,7 @@ namespace HeinHtetNaing_ADI.Services
             command.Parameters.AddWithValue("@Expertise", freelancer.Expertise ?? (object)DBNull.Value); // Map expertise field
         }
 
-
-        private static Skill MapReaderToSkill(SqlDataReader reader)
+        private static Skill MapReaderToSkill(MySqlDataReader reader)
         {
             return new Skill
             {
@@ -595,7 +554,7 @@ namespace HeinHtetNaing_ADI.Services
             };
         }
 
-        private static Freelancer MapReaderToFreelancer(SqlDataReader reader)
+        private static Freelancer MapReaderToFreelancer(MySqlDataReader reader)
         {
             return new Freelancer
             {
@@ -614,7 +573,6 @@ namespace HeinHtetNaing_ADI.Services
                 Skills = new List<Skill>() // Initialize as an empty list by default
             };
         }
-
         #endregion
     }
 }

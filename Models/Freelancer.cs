@@ -35,7 +35,7 @@ namespace HeinHtetNaing_ADI.Models
         [SqlColumnName("best_project")]
         public long? BestProject { get; set; }
 
-        [SqlColumnName("skill_tags")]
+        [SqlColumnName("expertise")]  // Changed from skill_tags to expertise for clarity
         [SqlType("VARCHAR(255)")]
         public string? Expertise { get; set; }
 

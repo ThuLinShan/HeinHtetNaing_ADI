@@ -5,14 +5,14 @@ namespace HeinHtetNaing_ADI.Models
 {
     public class Skill
     {
-        [SqlColumnName("skill_id")] // Specify column name for skill_id
+        [SqlColumnName("skill_id")]
         public long SkillId { get; set; }
 
-        [SqlColumnName("freelancer_id")] // Specify column name for freelancer_id
+        [SqlColumnName("freelancer_id")]
         public long? FreelancerId { get; set; }
 
-        [SqlColumnName("skill_name")] // Specify column name for skill_name
-        [SqlType("VARCHAR(100)")]      // Use VARCHAR(100) for skill_name (suitable for descriptive names)
+        [SqlColumnName("skill_name")]
+        [SqlType("VARCHAR(100)")]
         public string? SkillName { get; set; }
 
         [SqlColumnName("skill_level")]

@@ -1,6 +1,7 @@
 ﻿using HeinHtetNaing_ADI.Common.DTOs;
 using HeinHtetNaing_ADI.Models;
 using Microsoft.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 namespace HeinHtetNaing_ADI.Services
 {
@@ -20,14 +21,15 @@ namespace HeinHtetNaing_ADI.Services
                 using var connection = _databaseService.GetConnection();
                 var query = "INSERT INTO client (client_id, first_name, last_name, email, password_hash, address, phone_no, image) " +
                             "VALUES (@ClientId, @FirstName, @LastName, @Email, @PasswordHash, @Address, @PhoneNo, @Image)";
-                using var command = new SqlCommand(query, connection);
+
+                using var command = new MySqlCommand(query, connection);
 
                 MapParameters(command, client);
 
                 connection.Open();
                 command.ExecuteNonQuery();
             }
-            catch (SqlException ex)
+            catch (MySqlException ex)
             {
                 Console.WriteLine($"SQL Error: {ex.Message}");
                 throw;
@@ -40,34 +42,33 @@ namespace HeinHtetNaing_ADI.Services
             {
                 using var connection = _databaseService.GetConnection();
                 var query = "SELECT * FROM client WHERE client_id = @ClientId";
-                using var command = new SqlCommand(query, connection);
+                using var command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@ClientId", clientId);
 
                 connection.Open();
                 using var reader = command.ExecuteReader();
                 return reader.Read() ? MapReaderToClient(reader) : null;
             }
-            catch (SqlException ex)
+            catch (MySqlException ex)
             {
                 Console.WriteLine($"SQL Error: {ex.Message}");
                 throw;
             }
         }
-
         public Client? FindClientByEmail(string email)
         {
             try
             {
                 using var connection = _databaseService.GetConnection();
                 var query = "SELECT * FROM client WHERE email = @Email";
-                using var command = new SqlCommand(query, connection);
+                using var command = new MySqlCommand(query, connection); // Use MySqlCommand for MySQL
                 command.Parameters.AddWithValue("@Email", email);
 
                 connection.Open();
                 using var reader = command.ExecuteReader();
                 return reader.Read() ? MapReaderToClient(reader) : null;
             }
-            catch (SqlException ex)
+            catch (MySqlException ex) // Use MySqlException for MySQL
             {
                 Console.WriteLine($"SQL Error: {ex.Message}");
                 throw;
@@ -80,7 +81,7 @@ namespace HeinHtetNaing_ADI.Services
             {
                 using var connection = _databaseService.GetConnection();
                 var query = "SELECT * FROM client";
-                using var command = new SqlCommand(query, connection);
+                using var command = new MySqlCommand(query, connection); // Use MySqlCommand for MySQL
 
                 connection.Open();
                 using var reader = command.ExecuteReader();
@@ -92,13 +93,12 @@ namespace HeinHtetNaing_ADI.Services
                 }
                 return clients;
             }
-            catch (SqlException ex)
+            catch (MySqlException ex) // Use MySqlException for MySQL
             {
                 Console.WriteLine($"SQL Error: {ex.Message}");
                 throw;
             }
         }
-
         public void UpdateClient(Client client)
         {
             try
@@ -107,14 +107,14 @@ namespace HeinHtetNaing_ADI.Services
                 var query = "UPDATE client SET first_name = @FirstName, last_name = @LastName, email = @Email, " +
                             "password_hash = @PasswordHash, address = @Address, phone_no = @PhoneNo, image = @Image " +
                             "WHERE client_id = @ClientId";
-                using var command = new SqlCommand(query, connection);
+                using var command = new MySqlCommand(query, connection); // Use MySqlCommand for MySQL
 
                 MapParameters(command, client);
 
                 connection.Open();
                 command.ExecuteNonQuery();
             }
-            catch (SqlException ex)
+            catch (MySqlException ex) // Use MySqlException for MySQL
             {
                 Console.WriteLine($"SQL Error: {ex.Message}");
                 throw;
@@ -127,13 +127,13 @@ namespace HeinHtetNaing_ADI.Services
             {
                 using var connection = _databaseService.GetConnection();
                 var query = "DELETE FROM client WHERE client_id = @ClientId";
-                using var command = new SqlCommand(query, connection);
+                using var command = new MySqlCommand(query, connection); // Use MySqlCommand for MySQL
                 command.Parameters.AddWithValue("@ClientId", clientId);
 
                 connection.Open();
                 command.ExecuteNonQuery();
             }
-            catch (SqlException ex)
+            catch (MySqlException ex) // Use MySqlException for MySQL
             {
                 Console.WriteLine($"SQL Error: {ex.Message}");
                 throw;
@@ -150,9 +150,9 @@ namespace HeinHtetNaing_ADI.Services
                 int offset = (pageNumber - 1) * pageSize;
 
                 // Query to get paginated clients
-                var query = "SELECT * FROM client ORDER BY client_id OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
+                var query = "SELECT * FROM client ORDER BY client_id LIMIT @PageSize OFFSET @Offset"; // Use LIMIT and OFFSET for MySQL
 
-                using var command = new SqlCommand(query, connection);
+                using var command = new MySqlCommand(query, connection); // Use MySqlCommand for MySQL
                 command.Parameters.AddWithValue("@Offset", offset);
                 command.Parameters.AddWithValue("@PageSize", pageSize);
 
@@ -168,20 +168,20 @@ namespace HeinHtetNaing_ADI.Services
 
                 // Query to get total count of clients
                 var countQuery = "SELECT COUNT(*) FROM client";
-                using var countCommand = new SqlCommand(countQuery, connection);
+                using var countCommand = new MySqlCommand(countQuery, connection); // Use MySqlCommand for MySQL
                 var totalCount = Convert.ToInt32(countCommand.ExecuteScalar());
 
                 // Return paginated result
                 return new PagedResult<Client>(clients, totalCount, offset, pageSize);
             }
-            catch (SqlException ex)
+            catch (MySqlException ex) // Use MySqlException for MySQL
             {
                 Console.WriteLine($"SQL Error: {ex.Message}");
                 throw;
             }
         }
 
-        private static void MapParameters(SqlCommand command, Client client)
+        private static void MapParameters(MySqlCommand command, Client client)
         {
             command.Parameters.AddWithValue("@ClientId", client.ClientId);
             command.Parameters.AddWithValue("@FirstName", client.FirstName ?? (object)DBNull.Value);
@@ -193,7 +193,7 @@ namespace HeinHtetNaing_ADI.Services
             command.Parameters.AddWithValue("@Image", client.Image ?? (object)DBNull.Value);
         }
 
-        private static Client MapReaderToClient(SqlDataReader reader)
+        private static Client MapReaderToClient(MySqlDataReader reader)
         {
             return new Client
             {
@@ -207,5 +207,6 @@ namespace HeinHtetNaing_ADI.Services
                 Image = reader["image"] as string
             };
         }
+
     }
 }

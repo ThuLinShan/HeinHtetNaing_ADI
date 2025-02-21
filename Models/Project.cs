@@ -5,70 +5,71 @@ namespace HeinHtetNaing_ADI.Models
 {
     public class Project
     {
-        [SqlColumnName("project_id")] // Specify column name for project_id
+        [SqlColumnName("project_id")]
         public long ProjectId { get; set; }
 
-        [SqlColumnName("client_id")] // Specify column name for client_id
+        [SqlColumnName("client_id")]
         public long? ClientId { get; set; }
 
-        [SqlColumnName("freelancer_id")] // Specify column name for freelancer_id
+        [SqlColumnName("freelancer_id")]
         public long? FreelancerId { get; set; }
 
-        [SqlColumnName("title")] // Specify column name for title
-        [SqlType("VARCHAR(255)")] // Explicitly specify VARCHAR for title
+        [SqlColumnName("title")]
+        [SqlType("VARCHAR(255)")]
         public string? Title { get; set; }
 
-        [SqlColumnName("description")] // Specify column name for description
-        [SqlType("TEXT")] // Use TEXT for potentially long descriptions
+        [SqlColumnName("description")]
+        [SqlType("TEXT")]
         public string? Description { get; set; }
 
-        [SqlColumnName("skill_tags")] // Specify column name for skill_tags
-        [SqlType("TEXT")] // Stored as TEXT in the database
+        [SqlColumnName("skill_tags")]
+        [SqlType("TEXT")]
         public List<string>? SkillTags { get; set; }
 
-        [SqlColumnName("budget")] // Specify column name for budget
+        [SqlColumnName("budget")]
         public decimal? Budget { get; set; }
 
-        [SqlColumnName("currency")] // Specify column name for currency
-        [SqlType("VARCHAR(3)")] // Use ISO 4217 currency codes (e.g., USD, EUR)
+        [SqlColumnName("currency")]
+        [SqlType("VARCHAR(3)")]
         public string? Currency { get; set; }
 
-        [SqlColumnName("rating")] // Specify column name for rating
+        [SqlColumnName("rating")]
         [SqlType("DECIMAL")]
         public decimal? Rating { get; set; }
 
-        [SqlColumnName("dead_line")] // Specify column name for dead_line
+        [SqlColumnName("dead_line")]
         public DateTime Deadline { get; set; }
 
-        [SqlColumnName("status")] // Specify column name for status
-        [SqlType("VARCHAR(50)")] // Explicitly specify VARCHAR for status
+        [SqlColumnName("status")]
+        [SqlType("VARCHAR(50)")]
         public string? Status { get; set; }
 
-        [SqlColumnName("start_date")] // Specify column name for start_date
+        [SqlColumnName("start_date")]
         public long? StartDate { get; set; }
 
-        [SqlColumnName("end_date")] // Specify column name for end_date
+        [SqlColumnName("end_date")]
         public long? EndDate { get; set; }
 
-        [SqlColumnName("completed")] // Specify column name for completed
+        [SqlColumnName("completed")]
         [SqlType("TINYINT")]
         public bool? Completed { get; set; }
 
-        [SqlColumnName("client_rating")] // Specify column name for client_rating
+        [SqlColumnName("client_rating")]
         public decimal? ClientRating { get; set; }
 
-        [SqlColumnName("client_review")] // Specify column name for client_review
-        [SqlType("TEXT")] // Use TEXT for potentially long reviews
+        [SqlColumnName("client_review")]
+        [SqlType("TEXT")]
         public string? ClientReview { get; set; }
 
-        [SqlColumnName("created_at")] // Specify column name for created_at
+        [SqlColumnName("created_at")]
         public long? CreatedAt { get; set; }
 
-        [SqlColumnName("updated_at")] // Specify column name for updated_at
+        [SqlColumnName("updated_at")]
         public long? UpdatedAt { get; set; }
 
-        [SqlColumnName("version")] // Specify column name for version
+        [SqlColumnName("version")]
         public int? Version { get; set; }
+
 
         public Project() { }
 
